@@ -1,0 +1,5 @@
+---
+# This variables file is used by all host groups.
+
+configuration_repository: git@github.com:gawbul/gawbul-homelab.git
+wifi_interface: wlan0

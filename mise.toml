@@ -1,0 +1,41 @@
+[tools]
+ansible = "latest"
+container-structure-test = "latest"
+cosign = "latest"
+go = "latest"
+hk = "latest"
+jq = "latest"
+k9s = "latest"
+kubectl = "latest"
+pkl = "latest"
+python = "latest"
+shellcheck = "latest"
+skaffold = "latest"
+slsa-verifier = "latest"
+usage = "latest"
+yq = "latest"
+
+[env]
+HOMELAB_NODES = "eniac-node1 eniac-node2 eniac-node3 eniac-node4"
+
+[tasks.ssh-command-run]
+description = "Run a command over SSH on the remote nodes"
+run = """
+for node in $HOMELAB_NODES; do
+  ssh $node {{arg(name="command")}}
+done
+"""
+
+[tasks.ansible-playbook-run]
+description = "Run the Ansible playbooks using the hosts file"
+run = """
+ansible-playbook -i hosts site.yaml
+"""
+
+[tasks.prelint]
+description = "Run prelint commands"
+run = "echo prelint"
+
+[tasks.postlint]
+description = "Run postlint commands"
+run = "echo postlint"

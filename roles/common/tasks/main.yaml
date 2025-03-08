@@ -1,0 +1,89 @@
+---
+# This playbook contains common plays that will be run on all nodes.
+
+- name: Upgrade all existing packages
+  become: true
+  apt:
+    state: latest
+    update_cache: yes
+    upgrade: dist
+
+- name: Install all required packages
+  become: true
+  apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - apt-transport-https
+    - build-essential
+    - ca-certificates
+    - curl
+    - git
+    - gnupg
+    - golang-go
+    - libssl-dev
+    - lsb-release
+    - neovim
+    - network-manager
+    - python3-dev
+    - zsh
+
+- name: Start the network-manager service
+  become: true
+  service:
+    name: NetworkManager
+    state: started
+    enabled: yes
+  tags: network-manager
+
+- name: Configure the netplan file for eth0
+  become: true
+  template:
+    src: 99_ethernet_config.yaml.j2
+    dest: /etc/netplan/99_ethernet_config.yaml
+  tags: netplan
+  notify: apply netplan
+
+- name: Check if eth0 is enabled using the ip tool
+  become: true
+  shell: ip link show eth0 | grep -o "state UP"
+  register: eth0status
+  changed_when: "eth0status.rc != 0"
+  tags: netplan
+
+- name: Disable wifi using nmcli
+  become: true
+  command: nmcli radio wifi off
+  notify: restart network-manager
+  tags: network-manager
+
+- name: Check if WiFi is disabled using nmcli
+  become: true
+  shell: nmcli radio wifi | grep -o "disabled"
+  register: wifistatus
+  changed_when: "wifistatus.rc != 0"
+  tags: network-manager
+
+- name: Configure NetworkManager to set wlan0 as unmanaged
+  become: true
+  template:
+    src: set-wifi-unmanaged.conf.j2
+    dest: /etc/NetworkManager/conf.d/set-wifi-unmanaged.conf
+  tags: network-manager
+  notify: restart network-manager
+
+- name: Disable swap
+  become: true
+  shell: swapoff -a
+  tags: swap-off
+  
+- name: Comment out swap entry in /etc/fstab
+  become: true
+  lineinfile:
+    dest: /etc/fstab
+    regexp: '^(.*swap.*)$'
+    line: '# \1'
+    backrefs: yes
+    state: present
+  tags: swap-off

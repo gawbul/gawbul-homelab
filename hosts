@@ -1,0 +1,7 @@
+[k8s-control-plane]
+eniac-node1
+
+[k8s-worker-node]
+eniac-node2
+eniac-node3
+eniac-node4

@@ -1,0 +1,15 @@
+---
+# Handler to handle common notifications.
+# Handlers are called by other plays.
+
+- name: apply netplan
+  become: true
+  command: netplan apply
+  async: 45
+  poll: 0
+
+- name: restart network-manager
+  become: true
+  service:
+    name: NetworkManager
+    state: restarted

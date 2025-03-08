@@ -1,0 +1,40 @@
+amends "package://github.com/jdx/hk/releases/download/v0.5.0/hk@0.5.0#/Config.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.5.0/hk@0.5.0#/builtins/actionlint.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.5.0/hk@0.5.0#/builtins/go_fmt.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.5.0/hk@0.5.0#/builtins/go_imports.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.5.0/hk@0.5.0#/builtins/go_lines.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.5.0/hk@0.5.0#/builtins/go_sec.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.5.0/hk@0.5.0#/builtins/go_vet.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.5.0/hk@0.5.0#/builtins/go_vuln_check.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.5.0/hk@0.5.0#/builtins/golangci_lint.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.5.0/hk@0.5.0#/builtins/gomod_tidy.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.5.0/hk@0.5.0#/builtins/jq.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.5.0/hk@0.5.0#/builtins/markdown_lint.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.5.0/hk@0.5.0#/builtins/shellcheck.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.5.0/hk@0.5.0#/builtins/yamllint.pkl"
+import "package://github.com/jdx/hk/releases/download/v0.5.0/hk@0.5.0#/builtins/yq.pkl"
+
+min_hk_version = "0.5.0"
+
+linters {
+    ["actionlint"] = new actionlint.Actionlint {}
+    ["gomod_tidy"] {
+        workspace_indicator = "go.mod"
+        check_diff = "cd {{workspace}} && go mod tidy -diff"
+    }
+}
+
+hooks {
+    ["pre-commit"] = new {
+        ["prelint"] {
+            run = "mise run prelint"
+            exclusive = true
+        }
+        ["fix"] = new Fix {}
+        ["postlint"] {
+            run = "mise run postlint"
+            exclusive = true
+        }
+    }
+    ["pre-push"] = new { ["check"] = new Check {} }
+}
