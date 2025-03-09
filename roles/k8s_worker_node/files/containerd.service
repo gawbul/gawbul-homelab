@@ -4,8 +4,8 @@ Documentation=https://containerd.io
 After=network.target dbus.service
 
 [Service]
-ExecStartPre=-/sbin/modprobe overlay
-ExecStart=/usr/local/bin/containerd
+ExecStartPre=/sbin/modprobe overlay
+ExecStart=/bin/containerd
 
 Type=notify
 Delegate=yes

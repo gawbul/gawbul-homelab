@@ -24,7 +24,6 @@
     ansible.builtin.lineinfile:
       path: /etc/hosts
       line: "{{ item.value['node_info'].ip_address }} {{ item.value['node_info'].fqdn }} {{ item.value['node_info'].name }}"
-    when: item.key != inventory_hostname
     loop: "{{ nodes | dict2items }}"
 
 - name: Set the hostname on the machine
@@ -82,7 +81,6 @@
     src: 99-ethernet-config.yaml.j2
     dest: /etc/netplan/99-ethernet-config.yaml
     mode: '0600'
-  when: item.key == inventory_hostname
   with_dict: "{{ nodes[inventory_hostname] }}"
   notify: Apply Netplan
   tags: netplan

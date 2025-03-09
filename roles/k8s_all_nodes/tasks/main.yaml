@@ -34,6 +34,14 @@
     state: directory
   tags: containerd
 
+- name: Ensure temporary containerd directory exists
+  become: true
+  ansible.builtin.file:
+    path: /tmp/containerd
+    recurse: true
+    state: directory
+  tags: containerd
+
 - name: Download the Kubernetes components
   block:
     - name: Download CNI plugins
@@ -68,6 +76,7 @@
         url: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/containerd-{{ containerd_version }}-linux-{{ system_architecture }}.tar.gz
         dest: /tmp/containerd-{{ containerd_version }}-linux-{{ system_architecture }}.tar.gz
       tags: containerd
+
 
     - name: Extract containerd archive
       become: true

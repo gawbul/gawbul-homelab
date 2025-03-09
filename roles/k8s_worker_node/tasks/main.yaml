@@ -64,7 +64,6 @@
   ansible.builtin.template:
     src: 10-bridge.conf.j2
     dest: /etc/cni/net.d/10-bridge.conf
-  when: item.key == inventory_hostname
   with_dict: "{{ nodes[inventory_hostname] }}"
   tags: kubernetes
 
@@ -106,7 +105,7 @@
   ansible.builtin.copy:
     src: containerd.service
     dest: /etc/systemd/system/containerd.service
-    mode: '0600'
+    mode: '0644'
   tags: containerd
 
 - name: Copy the kubelet config in to place
@@ -114,7 +113,6 @@
   ansible.builtin.template:
     src: kubelet-config.yaml.j2
     dest: /var/lib/kubelet/kubelet-config.yaml
-  when: item.key == inventory_hostname
   with_dict: "{{ nodes[inventory_hostname] }}"
   tags: kubernetes
 
@@ -123,31 +121,15 @@
   ansible.builtin.copy:
     src: kubelet.service
     dest: /etc/systemd/system/kubelet.service
-    mode: '0600'
+    mode: '0644'
   tags: containerd
-
-- name: Ensure kubelet.service.d directory exists
-  become: true
-  ansible.builtin.file:
-    path: /etc/systemd/system/kubelet.service.d
-    recurse: true
-    state: directory
-  tags: kubernetes
-
-- name: Copy the kubeadm kubelet config file in to place
-  become: true
-  ansible.builtin.copy:
-    src: 10-kubeadm.conf
-    dest: /etc/systemd/system/kubelet.service.d/10-kubeadm.conf
-    mode: '0600'
-  tags: kubernetes
 
 - name: Copy the kube-proxy service file in to place
   become: true
   ansible.builtin.copy:
     src: kube-proxy.service
     dest: /etc/systemd/system/kube-proxy.service
-    mode: '0600'
+    mode: '0644'
   tags: containerd
 
 - name: Copy the kube-proxy config in to place
@@ -156,6 +138,28 @@
     src: kube-proxy-config.yaml.j2
     dest: /var/lib/kube-proxy/kube-proxy-config.yaml
   tags: kubernetes
+
+- name: Create nf-modules.conf file
+  become: true
+  ansible.builtin.file:
+    path: /etc/modules-load.d/nf-conntrack.conf
+    state: touch
+    mode: '0644'
+  tags: containerd
+
+- name: Ensure Netfilter modules are loaded at boot
+  become: true
+  ansible.builtin.lineinfile:
+    dest: /etc/modules-load.d/nf-conntrack.conf
+    line: "{{ item }}"
+  with_items:
+    - nf_conntrack
+  tags: containerd
+
+- name: Run modprobe to load Netfilter modules
+  become: true
+  ansible.builtin.shell: modprobe nf_conntrack
+  tags: containerd
 
 - name: Start the kubernetes services
   become: true

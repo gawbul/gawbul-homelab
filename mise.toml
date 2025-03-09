@@ -102,7 +102,7 @@ for node in ${K8S_WORKER_NODES[*]}; do
     --client-certificate=certs/${node}.crt \
     --client-key=certs/${node}.key \
     --embed-certs=true \
-    --kubeconfig=kubeconfig/${host}.kubeconfig
+    --kubeconfig=kubeconfig/${node}.kubeconfig
 
   kubectl config set-context default \
     --cluster=${K8S_CLUSTER_NAME} \

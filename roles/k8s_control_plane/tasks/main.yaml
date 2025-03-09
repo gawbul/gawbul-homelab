@@ -60,7 +60,7 @@
   ansible.builtin.copy:
     src: certs/{{ item}}
     dest: /etc/etcd/{{ item }}
-    mode: '0600'
+    mode: '0644'
   with_items:
     - ca.crt
     - kube-api-server.crt
@@ -72,7 +72,7 @@
   ansible.builtin.copy:
     src: etcd.service
     dest: /etc/systemd/system/etcd.service
-    mode: '0600'
+    mode: '0644'
   tags: etcd
 
 - name: Start the etcd service
@@ -100,7 +100,7 @@
   ansible.builtin.copy:
     src: certs/{{ item}}
     dest: /var/lib/kubernetes/{{ item }}
-    mode: '0600'
+    mode: '0644'
   with_items:
     - ca.crt
     - ca.key
@@ -115,7 +115,7 @@
   ansible.builtin.copy:
     src: encryption-config.yaml
     dest: /var/lib/kubernetes/encryption-config.yaml
-    mode: '0600'
+    mode: '0644'
   tags: kubernetes
 
 - name: Copy the api server and controller manager service files in to place
@@ -123,7 +123,7 @@
   ansible.builtin.template:
     src: "{{ item }}.service.j2"
     dest: /etc/systemd/system/{{ item }}.service
-    mode: '0600'
+    mode: '0644'
   with_items:
     - kube-apiserver
     - kube-controller-manager
@@ -134,7 +134,7 @@
   ansible.builtin.copy:
     src: kubeconfig/{{ item }}.kubeconfig
     dest: /var/lib/kubernetes/{{ item }}.kubeconfig
-    mode: '0600'
+    mode: '0644'
   with_items:
     - kube-controller-manager
     - kube-scheduler
@@ -145,7 +145,7 @@
   ansible.builtin.copy:
     src: kube-scheduler.service
     dest: /etc/systemd/system/kube-scheduler.service
-    mode: '0600'
+    mode: '0644'
   tags: kubernetes
 
 - name: Copy the scheduler configuration in to place
@@ -153,7 +153,7 @@
   ansible.builtin.copy:
     src: kube-scheduler.yaml
     dest: /etc/kubernetes/config/kube-scheduler.yaml
-    mode: '0600'
+    mode: '0644'
   tags: kubernetes
 
 - name: Start the control plane services
@@ -174,7 +174,7 @@
   ansible.builtin.copy:
     src: kubeconfig/admin.kubeconfig
     dest: /tmp/admin.kubeconfig
-    mode: '0600'
+    mode: '0644'
   tags: kubernetes
 
 - name: Copy the RBAC permissions in to place
@@ -182,7 +182,7 @@
   ansible.builtin.copy:
     src: kube-apiserver-to-kubelet.yaml
     dest: /tmp/kube-apiserver-to-kubelet.yaml
-    mode: '0600'
+    mode: '0644'
   tags: kubernetes
 
 - name: Apply the RBAC permissions to the cluster

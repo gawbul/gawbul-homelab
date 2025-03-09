@@ -6,7 +6,7 @@ network:
       dhcp4: false
       dhcp6: false
       addresses:
-        - {{ item.value['node_info'].ip_address }}/24
+        - {{ item.value.ip_address }}/24
       routes:
         - to: default
           via: {{ router_gateway_ip }}
