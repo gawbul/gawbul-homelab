@@ -4,20 +4,23 @@
 - name: Apply the common configuration to all nodes
   hosts: all
   remote_user: gawbul
-
   roles:
     - common
 
-- name: Configure and deploy the Kubernetes Control Plane Node
-  hosts: k8s-control-plane
+- name: Apply the configuration to all K8s nodes
+  hosts: [k8s-control-planes, k8s-worker-nodes]
   remote_user: gawbul
+  roles:
+    - k8s_all_nodes
 
+- name: Configure and deploy the Kubernetes Control Plane Node
+  hosts: k8s-control-planes
+  remote_user: gawbul
   roles:
     - k8s_control_plane
 
 - name: Configure and deploy the Kubernetes Worker Nodes
-  hosts: k8s-worker-node
+  hosts: k8s-worker-nodes
   remote_user: gawbul
-
   roles:
     - k8s_worker_node

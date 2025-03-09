@@ -1,0 +1,44 @@
+---
+# This playbook contains plays that will be run on the control plane nodes.
+
+- name: Download the Kubernetes components
+  block:
+    - name: Download the Kubernetes files
+      become: true
+      ansible.builtin.get_url:
+        url: https://dl.k8s.io/v{{ k8s_version }}/bin/linux/{{ system_architecture }}/{{ item }}
+        dest: /usr/local/bin/{{ item }}
+        mode: '0755'
+      with_items:
+        - kube-apiserver
+        - kube-controller-manager
+        - kube-scheduler
+      tags: kubernetes
+
+    - name: Download etcd
+      become: true
+      ansible.builtin.get_url:
+        url: https://github.com/etcd-io/etcd/releases/download/v{{ etcd_version }}/etcd-v{{ etcd_version }}-linux-{{ system_architecture }}.tar.gz
+        dest: /tmp/etcd-v{{ etcd_version }}-linux-{{ system_architecture }}.tar.gz
+      tags: etcd
+
+    - name: Extract etcd archive
+      become: true
+      ansible.builtin.unarchive:
+        src: /tmp/etcd-v{{ etcd_version }}-linux-{{ system_architecture }}.tar.gz
+        dest: /tmp
+        remote_src: true
+      tags: etcd
+
+    - name: Move the etcd files in to place
+      become: true
+      ansible.builtin.copy:
+        src: /tmp/etcd-v{{ etcd_version }}-linux-{{ system_architecture }}/{{ item }}
+        dest: /usr/local/bin/{{ item }}
+        remote_src: yes
+        mode: '0755'
+      with_items:
+        - etcd
+        - etcdctl
+        - etcdutl
+

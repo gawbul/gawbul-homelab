@@ -1,7 +1,7 @@
-[k8s-control-plane]
+[k8s-control-planes]
 eniac-node1
 
-[k8s-worker-node]
+[k8s-worker-nodes]
 eniac-node2
 eniac-node3
 eniac-node4

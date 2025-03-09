@@ -1,0 +1,182 @@
+---
+# This playbook contains common plays that will be run on all nodes.
+
+- name: Disable swap
+  become: true
+  shell: swapoff -a
+  tags: swap-off
+  
+- name: Comment out swap entry in /etc/fstab
+  become: true
+  ansible.builtin.lineinfile:
+    dest: /etc/fstab
+    regexp: '^(.*swap.*)$'
+    line: '# \1'
+    backrefs: yes
+    state: present
+  tags: swap-off
+
+- name: Enable IPv4 packet forwarding
+  become: true
+  ansible.posix.sysctl:
+    name: net.ipv4.ip_forward
+    value: '1'
+    sysctl_file: /etc/sysctl.d/k8s.conf
+    sysctl_set: true
+    state: present
+    reload: true
+
+- name: Download the Kubernetes components
+  block:
+    - name: Download CNI plugins
+      become: true
+      ansible.builtin.get_url:
+        url: https://github.com/containernetworking/plugins/releases/download/v{{ cni_version }}/cni-plugins-linux-{{ system_architecture }}-v{{ cni_version }}.tgz
+        dest: /tmp/cni-plugins-linux-{{ system_architecture }}-v{{ cni_version }}.tgz
+      tags: containerd
+
+    - name: Extract CNI plugins archive
+      become: true
+      ansible.builtin.unarchive:
+        src: /tmp/cni-plugins-linux-{{ system_architecture }}-v{{ cni_version }}.tgz
+        dest: /usr/local/bin
+        mode: '0755'
+        remote_src: true
+      tags: containerd
+
+    - name: Remove the non executable files
+      become: true
+      ansible.builtin.file:
+        path: /usr/local/bin/{{ item }}
+        state: absent
+      with_items:
+        - LICENSE
+        - README.md
+      tags: containerd
+
+    - name: Download containerd
+      become: true
+      ansible.builtin.get_url:
+        url: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/containerd-{{ containerd_version }}-linux-{{ system_architecture }}.tar.gz
+        dest: /tmp/containerd-{{ containerd_version }}-linux-{{ system_architecture }}.tar.gz
+      tags: containerd
+
+    - name: Extract containerd archive
+      become: true
+      ansible.builtin.unarchive:
+        src: /tmp/containerd-{{ containerd_version }}-linux-{{ system_architecture }}.tar.gz
+        dest: /usr/local
+        mode: '0755'
+        remote_src: true
+      tags: containerd
+
+    - name: Download crictl
+      become: true
+      ansible.builtin.get_url:
+        url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ crictl_version }}/crictl-v{{ crictl_version }}-linux-{{ system_architecture }}.tar.gz
+        decompress: true
+        dest: /usr/local/bin/crictl
+        tmp_dest: /tmp
+        mode: '0755'
+      tags: containerd
+
+    - name: Download the Kubernetes files
+      become: true
+      ansible.builtin.get_url:
+        url: https://dl.k8s.io/v{{ k8s_version }}/bin/linux/{{ system_architecture }}/{{ item }}
+        dest: /usr/local/bin/{{ item }}
+        mode: '0755'
+      with_items:
+        - kube-proxy
+        - kubeadm
+        - kubectl
+        - kubelet
+      tags: kubernetes
+
+    - name: Download runc
+      become: true
+      ansible.builtin.get_url:
+        url: https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/runc.{{ system_architecture }}
+        dest: /usr/local/sbin/runc
+        tmp_dest: /tmp
+        mode: '0755'
+      tags: containerd
+
+- name: Create containerd directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/containerd
+    recurse: true
+    state: directory
+  tags: containerd
+
+- name: Create default containerd config
+  become: true
+  ansible.builtin.shell: containerd config default | tee /etc/containerd/config.toml
+  register: containerdconfig
+  notify: Restart containerd
+  tags: containerd
+
+- name: Ensure "SystemdCgroup" is set in containerd config
+  become: true
+  ansible.builtin.lineinfile:
+    dest: /etc/containerd/config.toml
+    regexp: '(.*)SystemdCgroup = false'
+    line: '\1SystemdCgroup = {{ enable_systemd_cgroups }}'
+    state: present
+    backrefs: yes
+  notify: Restart containerd
+  tags: containerd
+
+- name: Download the containerd service file
+  become: true
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
+    dest: /usr/lib/systemd/system/containerd.service
+    mode: '0644'
+  notify: Restart containerd
+  tags: containerd
+
+- name: Start the containerd service
+  become: true
+  ansible.builtin.systemd_service:
+    name: containerd
+    daemon_reload: true
+    enabled: true
+    state: started
+  tags: containerd
+
+- name: Download the kubelet service file
+  become: true
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/kubernetes/release/refs/heads/master/cmd/krel/templates/latest/kubelet/kubelet.service
+    dest: /usr/lib/systemd/system/kubelet.service
+    mode: '0644'
+  notify: Restart kubelet
+  tags: kubernetes
+
+- name: Ensure kubelet.service.d directory exists
+  become: true
+  ansible.builtin.file:
+    path: /usr/lib/systemd/system/kubelet.service.d
+    recurse: true
+    state: directory
+  tags: kubernetes
+
+- name: Download the kubeadm config file
+  become: true
+  ansible.builtin.get_url:
+    url: https://raw.githubusercontent.com/kubernetes/release/refs/heads/master/cmd/krel/templates/latest/kubeadm/10-kubeadm.conf
+    dest: /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
+    mode: '0644'
+  notify: Restart kubelet
+  tags: kubernetes
+
+- name: Start the kubelet service
+  become: true
+  ansible.builtin.service:
+    name: kubelet
+    daemon_reload: true
+    enabled: true
+    state: started
+  tags: kubernetes
