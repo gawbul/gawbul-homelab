@@ -17,6 +17,15 @@ yq = "latest"
 
 [env]
 HOMELAB_NODES = "eniac-node1 eniac-node2 eniac-node3 eniac-node4"
+K8S_CERTIFICATES="admin eniac-node2 eniac-node3 eniac-node4 kube-proxy kube-scheduler kube-controller-manager kube-api-server service-accounts"
+
+[tasks.prelint]
+description = "Run prelint commands"
+run = "echo prelint"
+
+[tasks.postlint]
+description = "Run postlint commands"
+run = "echo postlint"
 
 [tasks.ssh-command-run]
 description = "Run a command over SSH on the remote nodes"
@@ -32,10 +41,30 @@ run = """
 ansible-playbook -i hosts site.yaml
 """
 
-[tasks.prelint]
-description = "Run prelint commands"
-run = "echo prelint"
+[tasks.ssl-ca-certificate-generate]
+description = "Generate the SSL CA certificate"
+depends = ["ssl-certificates-generate"]
+run = """
+openssl genrsa -out certs/ca.key 4096
+openssl req -x509 -new -sha512 -noenc \
+  -key certs/ca.key -days 3653 \
+  -config ca.conf \
+  -out certs/ca.crt
+"""
 
-[tasks.postlint]
-description = "Run postlint commands"
-run = "echo postlint"
+[tasks.ssl-certificates-generate]
+description = "Generate the client and server SSL certificates"
+run = """
+for i in ${K8S_CERTIFICATES[*]}; do
+  openssl genrsa -out "certs/${i}.key" 4096
+  openssl req -new -key "certs/${i}.key" -sha256 \
+    -config "ca.conf" -section ${i} \
+    -out "certs/${i}.csr"
+  openssl x509 -req -days 3653 -in "certs/${i}.csr" \
+    -copy_extensions copyall \
+    -sha256 -CA "certs/ca.crt" \
+    -CAkey "certs/ca.key" \
+    -CAcreateserial \
+    -out "certs/${i}.crt"
+done
+"""
