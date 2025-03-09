@@ -158,7 +158,7 @@
 
 - name: Run modprobe to load Netfilter modules
   become: true
-  ansible.builtin.shell: modprobe nf_conntrack
+  ansible.builtin.shell: modprobe -a nf_conntrack
   tags: containerd
 
 - name: Start the kubernetes services
@@ -172,4 +172,13 @@
     - containerd
     - kubelet
     - kube-proxy
+  tags: kubernetes
+
+- name: Add network routes for the pod networks
+  become: true
+  ansible.builtin.command: "ip route add {{ item.value['node_info'].pod_subnet }} via {{ item.value['node_info'].ip_address }}"
+  when:
+    - item.key != inventory_hostname
+    - item.key != "eniac-node1"
+  loop: "{{ nodes | dict2items }}"
   tags: kubernetes

@@ -219,6 +219,22 @@ depends = [
   "kubeconfig-kube-scheduler-generate",
   "kubeconfig-admin-generate",
 ]
+run = """
+  kubectl config set-cluster ${K8S_CLUSTER_NAME} \
+    --certificate-authority=certs/ca.crt \
+    --embed-certs=true \
+    --server=https://${K8S_CONTROL_PLANE_NODE}.kubernetes.local:6443
+
+  kubectl config set-credentials admin \
+    --client-certificate=certs/admin.crt \
+    --client-key=certs/admin.key
+
+  kubectl config set-context ${K8S_CLUSTER_NAME} \
+    --cluster=${K8S_CLUSTER_NAME} \
+    --user=admin
+
+  kubectl config use-context ${K8S_CLUSTER_NAME}
+"""
 
 [tasks.encryption-config-generate]
 description = "Generate the data encryption config"
