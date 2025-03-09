@@ -36,3 +36,10 @@ certs/
 *.crt
 *.csr
 *.key
+
+# ignore kubeconfig
+kubeconfig/
+*.kubeconfig
+
+# ignore encryption configuration
+encryption-config.yaml

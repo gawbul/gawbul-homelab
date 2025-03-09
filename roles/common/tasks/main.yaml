@@ -3,9 +3,10 @@
 
 # - name: Debug
 #   ansible.builtin.debug:
-#     msg: "{{ item.value['node_info'].ip_address }} {{ item.value['node_info'].fqdn }} {{ item.value['node_info'].name }}"
-#   when: item.key != inventory_hostname
-#   loop: "{{ nodes | dict2items }}"
+#     msg: "Source: {{ item.source }} Destination: {{ item.dest }}"
+#   loop:
+#     - { source: "{{ inventory_hostname }}.crt", dest: "kubelet.crt" }
+#     - { source: "{{ inventory_hostname }}.key", dest: "kubelet.key" }
 
 - name: Ensure /etc/hosts is populated correctly
   block:
@@ -49,18 +50,21 @@
     - apt-transport-https
     - build-essential
     - ca-certificates
+    - conntrack
     - curl
     - git
     - gnupg
     - golang-go
+    - ipset
     - libssl-dev
     - lsb-release
     - neovim
     - network-manager
     - openssl
     - python3-dev
-    - python3-jmespath
     - python3-neovim
+    - ripgrep
+    - socat
     - wget
     - zsh
 
@@ -75,9 +79,11 @@
 - name: Configure the netplan file for eth0
   become: true
   ansible.builtin.template:
-    src: 99_ethernet_config.yaml.j2
-    dest: /etc/netplan/99_ethernet_config.yaml
-    mode: 0600
+    src: 99-ethernet-config.yaml.j2
+    dest: /etc/netplan/99-ethernet-config.yaml
+    mode: '0600'
+  when: item.key == inventory_hostname
+  with_dict: "{{ nodes[inventory_hostname] }}"
   notify: Apply Netplan
   tags: netplan
 
@@ -106,7 +112,7 @@
   ansible.builtin.template:
     src: set-wifi-unmanaged.conf.j2
     dest: /etc/NetworkManager/conf.d/set-wifi-unmanaged.conf
-    mode: 0600
-  tags: network-manager
+    mode: '0600'
   notify: Restart NetworkManager
+  tags: network-manager
 

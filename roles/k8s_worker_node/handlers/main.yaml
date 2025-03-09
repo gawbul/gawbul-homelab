@@ -16,3 +16,11 @@
     daemon_reload: true
     state: restarted
   tags: kubernetes
+
+- name: Restart kube-proxy
+  become: true
+  ansible.builtin.systemd_service:
+    name: kube-proxy
+    daemon_reload: true
+    state: restarted
+  tags: kubernetes

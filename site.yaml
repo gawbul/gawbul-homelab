@@ -1,6 +1,12 @@
 ---
 # This playbook deploys the server configuration stack to all relevant nodes in this site.
 
+- name: Apply the configuration to the local machine
+  hosts: local
+  remote_user: gawbul
+  roles:
+    - local
+
 - name: Apply the common configuration to all nodes
   hosts: all
   remote_user: gawbul

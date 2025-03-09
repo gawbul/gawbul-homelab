@@ -26,6 +26,14 @@
     state: present
     reload: true
 
+- name: Ensure CNI bin directory exists
+  become: true
+  ansible.builtin.file:
+    path: /opt/cni/bin
+    recurse: true
+    state: directory
+  tags: containerd
+
 - name: Download the Kubernetes components
   block:
     - name: Download CNI plugins
@@ -39,7 +47,7 @@
       become: true
       ansible.builtin.unarchive:
         src: /tmp/cni-plugins-linux-{{ system_architecture }}-v{{ cni_version }}.tgz
-        dest: /usr/local/bin
+        dest: /opt/cni/bin
         mode: '0755'
         remote_src: true
       tags: containerd
@@ -47,7 +55,7 @@
     - name: Remove the non executable files
       become: true
       ansible.builtin.file:
-        path: /usr/local/bin/{{ item }}
+        path: /opt/cni/bin/{{ item }}
         state: absent
       with_items:
         - LICENSE
@@ -65,9 +73,23 @@
       become: true
       ansible.builtin.unarchive:
         src: /tmp/containerd-{{ containerd_version }}-linux-{{ system_architecture }}.tar.gz
-        dest: /usr/local
+        dest: /tmp/containerd
         mode: '0755'
         remote_src: true
+      tags: containerd
+
+    - name: Move containerd files in to place
+      become: true
+      ansible.builtin.copy:
+        src: /tmp/containerd/bin/{{ item }}
+        dest: /bin/{{ item }}
+        mode: '0755'
+        remote_src: true
+      with_items:
+        - containerd
+        - containerd-shim-runc-v2
+        - containerd-stress
+        - ctr
       tags: containerd
 
     - name: Download crictl
@@ -101,82 +123,3 @@
         tmp_dest: /tmp
         mode: '0755'
       tags: containerd
-
-- name: Create containerd directory
-  become: true
-  ansible.builtin.file:
-    path: /etc/containerd
-    recurse: true
-    state: directory
-  tags: containerd
-
-- name: Create default containerd config
-  become: true
-  ansible.builtin.shell: containerd config default | tee /etc/containerd/config.toml
-  register: containerdconfig
-  notify: Restart containerd
-  tags: containerd
-
-- name: Ensure "SystemdCgroup" is set in containerd config
-  become: true
-  ansible.builtin.lineinfile:
-    dest: /etc/containerd/config.toml
-    regexp: '(.*)SystemdCgroup = false'
-    line: '\1SystemdCgroup = {{ enable_systemd_cgroups }}'
-    state: present
-    backrefs: yes
-  notify: Restart containerd
-  tags: containerd
-
-- name: Download the containerd service file
-  become: true
-  ansible.builtin.get_url:
-    url: https://raw.githubusercontent.com/containerd/containerd/main/containerd.service
-    dest: /usr/lib/systemd/system/containerd.service
-    mode: '0644'
-  notify: Restart containerd
-  tags: containerd
-
-- name: Start the containerd service
-  become: true
-  ansible.builtin.systemd_service:
-    name: containerd
-    daemon_reload: true
-    enabled: true
-    state: started
-  tags: containerd
-
-- name: Download the kubelet service file
-  become: true
-  ansible.builtin.get_url:
-    url: https://raw.githubusercontent.com/kubernetes/release/refs/heads/master/cmd/krel/templates/latest/kubelet/kubelet.service
-    dest: /usr/lib/systemd/system/kubelet.service
-    mode: '0644'
-  notify: Restart kubelet
-  tags: kubernetes
-
-- name: Ensure kubelet.service.d directory exists
-  become: true
-  ansible.builtin.file:
-    path: /usr/lib/systemd/system/kubelet.service.d
-    recurse: true
-    state: directory
-  tags: kubernetes
-
-- name: Download the kubeadm config file
-  become: true
-  ansible.builtin.get_url:
-    url: https://raw.githubusercontent.com/kubernetes/release/refs/heads/master/cmd/krel/templates/latest/kubeadm/10-kubeadm.conf
-    dest: /usr/lib/systemd/system/kubelet.service.d/10-kubeadm.conf
-    mode: '0644'
-  notify: Restart kubelet
-  tags: kubernetes
-
-- name: Start the kubelet service
-  become: true
-  ansible.builtin.service:
-    name: kubelet
-    daemon_reload: true
-    enabled: true
-    state: started
-  tags: kubernetes

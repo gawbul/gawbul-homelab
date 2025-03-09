@@ -16,3 +16,27 @@
     daemon_reload: true
     state: restarted
   tags: kubernetes
+
+- name: Restart etcd
+  become: true
+  ansible.builtin.systemd_service:
+    name: etcd
+    daemon_reload: true
+    state: restarted
+  tags: etcd
+
+- name: Restart kube-apiserver
+  become: true
+  ansible.builtin.systemd_service:
+    name: kube-apiserver
+    daemon_reload: true
+    state: restarted
+  tags: kubernetes
+
+- name: Restart kube-scheduler
+  become: true
+  ansible.builtin.systemd_service:
+    name: kube-scheduler
+    daemon_reload: true
+    state: restarted
+  tags: kubernetes

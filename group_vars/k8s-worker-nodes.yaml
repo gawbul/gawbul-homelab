@@ -1,2 +1,4 @@
 ---
 # This variables file is used by the playbooks in the k8s_worker_node group.
+
+k8s_cluster_cidr: "10.200.0.0/16"

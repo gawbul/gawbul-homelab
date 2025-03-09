@@ -30,7 +30,7 @@
         remote_src: true
       tags: etcd
 
-    - name: Move the etcd files in to place
+    - name: Copy the etcd files in to place
       become: true
       ansible.builtin.copy:
         src: /tmp/etcd-v{{ etcd_version }}-linux-{{ system_architecture }}/{{ item }}
@@ -41,4 +41,151 @@
         - etcd
         - etcdctl
         - etcdutl
+      tags: etcd
 
+- name: Ensure the etcd directories exist
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: '0700'
+    recurse: true
+    state: directory
+  with_items:
+    - /etc/etcd
+    - /var/lib/etcd
+  tags: etcd
+
+- name: Copy the etcd SSL certificates in to place
+  become: true
+  ansible.builtin.copy:
+    src: certs/{{ item}}
+    dest: /etc/etcd/{{ item }}
+    mode: '0600'
+  with_items:
+    - ca.crt
+    - kube-api-server.crt
+    - kube-api-server.key
+  tags: etcd
+
+- name: Copy the etcd service file in to place
+  become: true
+  ansible.builtin.copy:
+    src: etcd.service
+    dest: /etc/systemd/system/etcd.service
+    mode: '0600'
+  tags: etcd
+
+- name: Start the etcd service
+  become: true
+  ansible.builtin.service:
+    name: etcd
+    daemon_reload: true
+    enabled: true
+    state: started
+  tags: etcd
+
+- name: Create the kubernetes directories
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: '0700'
+    state: directory
+  with_items:
+    - /etc/kubernetes/config
+    - /var/lib/kubernetes
+  tags: kubernetes
+
+- name: Copy the kubernetes SSL certificates in to place
+  become: true
+  ansible.builtin.copy:
+    src: certs/{{ item}}
+    dest: /var/lib/kubernetes/{{ item }}
+    mode: '0600'
+  with_items:
+    - ca.crt
+    - ca.key
+    - kube-api-server.crt
+    - kube-api-server.key
+    - service-accounts.crt
+    - service-accounts.key
+  tags: kubernetes
+
+- name: Copy the encryption configuration in to place
+  become: true
+  ansible.builtin.copy:
+    src: encryption-config.yaml
+    dest: /var/lib/kubernetes/encryption-config.yaml
+    mode: '0600'
+  tags: kubernetes
+
+- name: Copy the api server and controller manager service files in to place
+  become: true
+  ansible.builtin.template:
+    src: "{{ item }}.service.j2"
+    dest: /etc/systemd/system/{{ item }}.service
+    mode: '0600'
+  with_items:
+    - kube-apiserver
+    - kube-controller-manager
+  tags: kubernetes
+
+- name: Copy the controller manager and scheduler kube config files in to place
+  become: true
+  ansible.builtin.copy:
+    src: kubeconfig/{{ item }}.kubeconfig
+    dest: /var/lib/kubernetes/{{ item }}.kubeconfig
+    mode: '0600'
+  with_items:
+    - kube-controller-manager
+    - kube-scheduler
+  tags: kubernetes
+
+- name: Copy the scheduler service in to place
+  become: true
+  ansible.builtin.copy:
+    src: kube-scheduler.service
+    dest: /etc/systemd/system/kube-scheduler.service
+    mode: '0600'
+  tags: kubernetes
+
+- name: Copy the scheduler configuration in to place
+  become: true
+  ansible.builtin.copy:
+    src: kube-scheduler.yaml
+    dest: /etc/kubernetes/config/kube-scheduler.yaml
+    mode: '0600'
+  tags: kubernetes
+
+- name: Start the control plane services
+  become: true
+  ansible.builtin.service:
+    name: "{{ item }}"
+    daemon_reload: true
+    enabled: true
+    state: started
+  with_items:
+    - kube-apiserver
+    - kube-controller-manager
+    - kube-scheduler
+  tags: etcd
+
+- name: Copy the admin kube config in to place
+  become: true
+  ansible.builtin.copy:
+    src: kubeconfig/admin.kubeconfig
+    dest: /tmp/admin.kubeconfig
+    mode: '0600'
+  tags: kubernetes
+
+- name: Copy the RBAC permissions in to place
+  become: true
+  ansible.builtin.copy:
+    src: kube-apiserver-to-kubelet.yaml
+    dest: /tmp/kube-apiserver-to-kubelet.yaml
+    mode: '0600'
+  tags: kubernetes
+
+- name: Apply the RBAC permissions to the cluster
+  become: true
+  ansible.builtin.command: kubectl apply -f /tmp/kube-apiserver-to-kubelet.yaml --kubeconfig /tmp/admin.kubeconfig
+  tags: kubernetes
