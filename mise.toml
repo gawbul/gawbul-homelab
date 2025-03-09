@@ -17,6 +17,7 @@ yq = "latest"
 
 [env]
 HOMELAB_NODES = "eniac-node1 eniac-node2 eniac-node3 eniac-node4"
+HOMELAB_IPS = "192.168.50.4 192.168.50.5 192.168.50.6 192.168.50.7"
 K8S_CERTIFICATES = "admin eniac-node2 eniac-node3 eniac-node4 kube-proxy kube-scheduler kube-controller-manager kube-api-server service-accounts"
 K8S_CLUSTER_NAME = "eniac"
 K8S_CONTROL_PLANE_NODE = "eniac-node1"
@@ -45,9 +46,19 @@ run = """
 ansible-playbook -i hosts site.yaml
 """
 
+[tasks.etc-hosts-set]
+description = "Set the hostnames in /etc/hosts"
+run = """
+sudo sed -E -i '' '/^.*[a-z.-]+kubernetes.local$/d' /etc/hosts
+read -r -a NODE_IPS <<< "${HOMELAB_IPS}"
+read -r -a NODE_NAMES <<< "${HOMELAB_NODES}"
+for i in {0..3}; do
+  echo "${NODE_IPS[$i]}\t${NODE_NAMES[$i]}.kubernetes.local" | sudo tee -a /etc/hosts
+done
+"""
+
 [tasks.ssl-ca-certificate-generate]
 description = "Generate the SSL CA certificate"
-depends = ["ssl-certificates-generate"]
 run = """
 openssl genrsa -out certs/ca.key 4096
 
@@ -59,6 +70,7 @@ openssl req -x509 -new -sha512 -noenc \
 
 [tasks.ssl-certificates-generate]
 description = "Generate the client and server SSL certificates"
+depends = ["ssl-ca-certificate-generate"]
 run = """
 for i in ${K8S_CERTIFICATES[*]}; do
   openssl genrsa -out "certs/${i}.key" 4096
