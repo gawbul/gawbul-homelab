@@ -40,3 +40,5 @@ nodes:
       fqdn: eniac-node4.kubernetes.local
       ip_address: "192.168.50.7"
       pod_subnet: "10.200.2.0/24"
+
+router_gateway_ip: "192.168.50.1"

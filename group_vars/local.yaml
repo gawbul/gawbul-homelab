@@ -1,4 +1,0 @@
----
-# This variables file is used by the playbooks in the local group.
-
-router_gateway_ip: 192.168.50.1
