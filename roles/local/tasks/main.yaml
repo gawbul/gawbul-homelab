@@ -51,5 +51,5 @@
 - name: Install Metrics Server
   ansible.builtin.shell: |
     helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/ --force-update
-    helm upgrade --install metrics-server metrics-server/metrics-server --set args="{--kubelet-insecure-tls}"
+    helm upgrade --install metrics-server metrics-server/metrics-server
     kubectl wait deployments/metrics-server --for=condition=Available --timeout=300s

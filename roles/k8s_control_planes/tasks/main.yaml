@@ -104,6 +104,8 @@
   with_items:
     - ca.crt
     - ca.key
+    - front-proxy-client.crt
+    - front-proxy-client.key
     - kube-api-server.crt
     - kube-api-server.key
     - service-accounts.crt

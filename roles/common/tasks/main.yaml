@@ -87,27 +87,44 @@
     - apt-transport-https
     - autoconf
     - automake
+    - bash
     - btrfs-progs
     - build-essential
     - ca-certificates
     - conntrack
     - curl
+    - ethtool
+    - fuse-overlayfs
     - git
     - gnupg
     - golang-go
+    - iproute2
     - ipset
+    - iptables
+    - jq
+    - kmod
     - libbtrfs-dev
     - libseccomp2
     - libseccomp-dev
     - libssl-dev
     - libtool
     - lsb-release
+    - mount
     - neovim
     - network-manager
+    - nftables
     - openssl
+    - open-iscsi
+    - pigz
+    - procps
     - python3-dev
     - python3-neovim
     - ripgrep
     - socat
+    - util-linux
     - wget
     - zsh
+
+
+
+    

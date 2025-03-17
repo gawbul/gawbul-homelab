@@ -4,15 +4,19 @@ authentication:
   anonymous:
     enabled: false
   webhook:
+    cacheTTL: 0s
     enabled: true
   x509:
     clientCAFile: "/var/lib/kubelet/ca.crt"
 authorization:
   mode: Webhook
-clusterDomain: "cluster.local"
+  webhook:
+    cacheAuthorizedTTL: 0s
+    cacheUnauthorizedTTL: 0s
+cgroupDriver: systemd
 clusterDNS:
   - "10.32.0.10"
-cgroupDriver: systemd
+clusterDomain: "cluster.local"
 containerRuntimeEndpoint: "unix:///var/run/containerd/containerd.sock"
 podCIDR: "{{ item.value.pod_subnet }}"
 resolvConf: "/run/systemd/resolve/resolv.conf"
