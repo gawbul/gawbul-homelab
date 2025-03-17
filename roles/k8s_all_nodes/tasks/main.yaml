@@ -58,6 +58,7 @@
     - net.ipv4.ip_forward
     - net.bridge.bridge-nf-call-iptables
     - net.bridge.bridge-nf-call-ip6tables
+    - vm.overcommit_memory
   tags: containerd
 
 - name: Ensure CNI bin directory exists
