@@ -1,0 +1,130 @@
+---
+# This playbook contains common plays that will be run on all nodes.
+
+- name: Set the hostname on the machine
+  become: true
+  ansible.builtin.shell: "hostnamectl hostname {{ item.value.name }}"
+  with_dict: "{{ nodes[inventory_hostname] }}"
+
+- name: Ensure /etc/hosts is populated correctly
+  block:
+  - name: Set 127.0.1.1 hostname and fqdn
+    become: true
+    ansible.builtin.lineinfile:
+      path: /etc/hosts
+      regexp: '^(127.0.1.1).*$'
+      line: '\1 {{ item.value.fqdn }} {{ item.value.name }}'
+      backrefs: yes
+    with_dict: "{{ nodes[inventory_hostname] }}"
+
+  - name: Set all node hostnames in /etc/hosts
+    become: true
+    ansible.builtin.lineinfile:
+      path: /etc/hosts
+      regexp: "^{{ item.value['node_info'].ip_address }} {{ item.value['node_info'].fqdn }} {{ item.value['node_info'].name }}$"
+      line: "{{ item.value['node_info'].ip_address }} {{ item.value['node_info'].fqdn }} {{ item.value['node_info'].name }}"
+    loop: "{{ nodes | dict2items }}"
+
+  - name: Set all hostnames in /etc/cloud/templates/hosts.debian.tmpl
+    become: true
+    ansible.builtin.lineinfile:
+      path: /etc/cloud/templates/hosts.debian.tmpl
+      regexp: "^{{ item.value['node_info'].ip_address }} {{ item.value['node_info'].fqdn }} {{ item.value['node_info'].name }}$"
+      line: "{{ item.value['node_info'].ip_address }} {{ item.value['node_info'].fqdn }} {{ item.value['node_info'].name }}"
+    loop: "{{ nodes | dict2items }}"
+
+- name: Configure the netplan file for wlan0
+  become: true
+  ansible.builtin.lineinfile:
+    path: /etc/netplan/50-cloud-init.yaml
+    regexp: '^.*activation-mode: "manual"$'
+    line: '      activation-mode: "manual"'
+    insertafter: '^.*dhcp4: true$'
+  notify: Apply Netplan
+  tags: netplan
+
+- name: Configure the netplan file for eth0
+  become: true
+  ansible.builtin.template:
+    src: 99-ethernet-config-{{ inventory_hostname }}.yaml.j2
+    dest: /etc/netplan/99-ethernet-config.yaml
+    mode: '0600'
+  with_dict: "{{ nodes[inventory_hostname] }}"
+  notify: Apply Netplan
+  tags: netplan
+
+- name: Enable cgroups limit support
+  become: true
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/cmdline.txt
+    regexp: '^(console=serial0.*cfg80211.ieee80211_regdom=GB)$'
+    line: '\1 cgroup_enable=cpuset cgroup_enable=memory cgroup_memory=1 swapaccount=1'
+    backrefs: yes
+    mode: '0600'
+  register: kernelparams
+  tags: kubernetes
+
+- name: Reboot the nodes to update the Kernel arguments
+  become: true
+  ansible.builtin.reboot:
+    reboot_timeout: 600
+  when: kernelparams.changed
+
+- name: Upgrade all existing packages
+  become: true
+  ansible.builtin.apt:
+    state: latest
+    update_cache: yes
+    upgrade: dist
+
+- name: Install all required packages
+  become: true
+  ansible.builtin.apt:
+    name: "{{ item }}"
+    state: present
+    update_cache: yes
+  with_items:
+    - apt-transport-https
+    - autoconf
+    - automake
+    - bash
+    - btrfs-progs
+    - build-essential
+    - ca-certificates
+    - conntrack
+    - curl
+    - ethtool
+    - fuse-overlayfs
+    - git
+    - gnupg
+    - golang-go
+    - iproute2
+    - ipset
+    - iptables
+    - jq
+    - kmod
+    - libbtrfs-dev
+    - libseccomp2
+    - libseccomp-dev
+    - libssl-dev
+    - libtool
+    - lsb-release
+    - mount
+    - neovim
+    - network-manager
+    - nftables
+    - openssl
+    - open-iscsi
+    - pigz
+    - procps
+    - python3-dev
+    - python3-neovim
+    - ripgrep
+    - socat
+    - util-linux
+    - wget
+    - zsh
+
+
+
+    

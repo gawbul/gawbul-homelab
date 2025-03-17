@@ -1,0 +1,16 @@
+---
+# This variables file is used by the playbooks in the local group.
+
+configuration_repository: "git@github.com:gawbul/gawbul-homelab.git"
+
+local_path_version: 0.0.31
+csi_driver_version: 4.10.0
+
+nfs_server_ip: 192.168.50.2
+nfs_server_share: /volume1/kubernetes
+
+github_token: "{{ flux_github_token }}"
+github_username: gawbul
+gitops_repository: gawbul-gitops
+gitops_branch: main
+gitops_path: clusters/eniac

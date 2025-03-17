@@ -1,0 +1,177 @@
+---
+# This playbook contains common plays that will be run on the Kubernetes worker nodes.
+
+- name: Create nf-modules.conf file
+  become: true
+  ansible.builtin.file:
+    path: /etc/modules-load.d/nf-conntrack.conf
+    state: touch
+    mode: '0644'
+  tags: containerd
+
+- name: Ensure Netfilter modules are loaded at boot
+  become: true
+  ansible.builtin.lineinfile:
+    dest: /etc/modules-load.d/nf-conntrack.conf
+    line: "{{ item }}"
+  with_items:
+    - nf_conntrack
+  tags: containerd
+
+- name: Run modprobe to load Netfilter modules
+  become: true
+  ansible.builtin.shell: modprobe -a nf_conntrack
+  tags: containerd
+
+- name: Ensure kubelet and kube-proxy directories exists
+  become: true
+  ansible.builtin.file:
+    path: /var/lib/{{ item }}
+    recurse: true
+    state: directory
+  with_items:
+    - kube-proxy
+    - kubelet
+  tags: kubernetes
+
+- name: Copy the client SSL and CA certificates to the nodes
+  become: true
+  ansible.builtin.copy:
+    src: certs/{{ item.source }}
+    dest: /var/lib/kubelet/{{ item.dest }}
+  loop:
+    - { source: "ca.crt", dest: "ca.crt" }
+    - { source: "{{ inventory_hostname }}.crt", dest: "kubelet.crt" }
+    - { source: "{{ inventory_hostname }}.key", dest: "kubelet.key" }
+  tags: kubernetes
+
+- name: Copy the kubeconfig files to the nodes
+  block:
+    - name: Copy the kube-proxy kube config file to the nodes
+      become: true
+      ansible.builtin.copy:
+        src: kubeconfig/kube-proxy.kubeconfig
+        dest: /var/lib/kube-proxy/kubeconfig
+      tags: kubernetes
+
+    - name: Copy the kubelet kube config file to the nodes
+      become: true
+      ansible.builtin.copy:
+        src: kubeconfig/{{ item }}.kubeconfig
+        dest: /var/lib/kubelet/kubeconfig
+      when: item == inventory_hostname
+      with_items:
+        - eniac-node1
+        - eniac-node2
+        - eniac-node3
+        - eniac-node4
+      tags: kubernetes
+
+- name: Create the kubernetes directories
+  become: true
+  ansible.builtin.file:
+    path: "{{ item }}"
+    mode: '0700'
+    state: directory
+  with_items:
+    - /etc/cni/net.d
+    - /opt/cni/bin
+    - /var/lib/kubelet
+    - /var/lib/kube-proxy
+    - /var/lib/kubernetes
+    - /var/run/kubernetes
+  tags: kubernetes
+
+- name: Copy the CNI networking bridge config in to place
+  become: true
+  ansible.builtin.template:
+    src: 10-bridge.conf.j2
+    dest: /etc/cni/net.d/10-bridge.conf
+  with_dict: "{{ nodes[inventory_hostname] }}"
+  tags: kubernetes
+
+- name: Copy the CNI networking loopback config file in to place
+  become: true
+  ansible.builtin.copy:
+    src: 99-loopback.conf
+    dest: /etc/cni/net.d/99-loopback.conf
+  tags: kubernetes
+
+- name: Create containerd directory
+  become: true
+  ansible.builtin.file:
+    path: /etc/containerd
+    recurse: true
+    state: directory
+  tags: containerd
+
+- name: Create default containerd config
+  become: true
+  ansible.builtin.shell: containerd config default | tee /etc/containerd/config.toml
+  register: containerdconfig
+  notify: Restart containerd
+  tags: containerd
+
+- name: Ensure "SystemdCgroup" is set in containerd config
+  become: true
+  ansible.builtin.lineinfile:
+    dest: /etc/containerd/config.toml
+    regexp: '(.*)SystemdCgroup = false'
+    line: '\1SystemdCgroup = {{ enable_systemd_cgroups }}'
+    state: present
+    backrefs: yes
+  notify: Restart containerd
+  tags: containerd
+
+- name: Copy the containerd service file in to place
+  become: true
+  ansible.builtin.copy:
+    src: containerd.service
+    dest: /etc/systemd/system/containerd.service
+    mode: '0644'
+  tags: containerd
+
+- name: Copy the kubelet config in to place
+  become: true
+  ansible.builtin.template:
+    src: kubelet-config.yaml.j2
+    dest: /var/lib/kubelet/kubelet-config.yaml
+  with_dict: "{{ nodes[inventory_hostname] }}"
+  tags: kubernetes
+
+- name: Copy the kubelet service file in to place
+  become: true
+  ansible.builtin.copy:
+    src: kubelet.service
+    dest: /etc/systemd/system/kubelet.service
+    mode: '0644'
+  tags: containerd
+
+- name: Copy the kube-proxy service file in to place
+  become: true
+  ansible.builtin.copy:
+    src: kube-proxy.service
+    dest: /etc/systemd/system/kube-proxy.service
+    mode: '0644'
+  tags: containerd
+
+- name: Copy the kube-proxy config in to place
+  become: true
+  ansible.builtin.template:
+    src: kube-proxy-config.yaml.j2
+    dest: /var/lib/kube-proxy/kube-proxy-config.yaml
+  with_dict: "{{ nodes[inventory_hostname] }}"
+  tags: kubernetes
+
+- name: Start the kubernetes services
+  become: true
+  ansible.builtin.systemd_service:
+    name: "{{ item }}"
+    daemon_reload: true
+    enabled: true
+    state: restarted
+  with_items:
+    - containerd
+    - kubelet
+    - kube-proxy
+  tags: kubernetes

@@ -1,0 +1,26 @@
+---
+# Handler to handle control plane notifications.
+
+- name: Restart containerd
+  become: true
+  ansible.builtin.systemd_service:
+    name: containerd
+    daemon_reload: true
+    state: restarted
+  tags: containerd
+
+- name: Restart kubelet
+  become: true
+  ansible.builtin.systemd_service:
+    name: kubelet
+    daemon_reload: true
+    state: restarted
+  tags: kubernetes
+
+- name: Restart kube-proxy
+  become: true
+  ansible.builtin.systemd_service:
+    name: kube-proxy
+    daemon_reload: true
+    state: restarted
+  tags: kubernetes

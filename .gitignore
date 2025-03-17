@@ -23,3 +23,27 @@ go.work.sum
 
 # env file
 .env
+
+# ignore envrc files
+.envrc
+
+# ignore mise files
+mise.local.toml
+mise.*.local.toml
+
+# ignore certificates
+certs/
+*.crt
+*.csr
+*.key
+
+# ignore kubeconfig
+kubeconfig/
+*.kubeconfig
+
+# ignore encryption configuration
+encryption-config.yaml
+
+# ignore Ansible Vault files
+.vault_pass
+flux_github_token.yaml

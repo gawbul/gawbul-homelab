@@ -1,0 +1,9 @@
+---
+# Handler to handle common notifications.
+
+- name: Apply Netplan
+  become: true
+  ansible.builtin.command: netplan apply
+  async: 45
+  poll: 0
+  tags: netplan

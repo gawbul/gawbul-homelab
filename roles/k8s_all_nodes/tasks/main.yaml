@@ -1,0 +1,183 @@
+---
+# This playbook contains common plays that will be run on all nodes.
+
+- name: Disable swap
+  become: true
+  shell: swapoff -a
+  tags: swap-off
+  
+- name: Comment out swap entry in /etc/fstab
+  become: true
+  ansible.builtin.lineinfile:
+    dest: /etc/fstab
+    regexp: '^(.*swap.*)$'
+    line: '# \1'
+    backrefs: yes
+    state: present
+  tags: swap-off
+
+- name: Load kernel modules
+  become: true
+  ansible.builtin.command: modprobe {{ item }}
+  with_items:
+    - overlay
+    - br_netfilter
+  tags: containerd
+
+- name: Ensure kernel modules file exists
+  become: true
+  ansible.builtin.file:
+    path: /etc/modules-load.d/containerd.conf
+    state: touch
+  tags: containerd
+
+- name: Ensure kernel modules load every time
+  become: true
+  ansible.builtin.lineinfile:
+    dest: /etc/modules-load.d/containerd.conf
+    regexp: "{{ item.regexp }}"
+    line: "{{ item.line }}"
+    state: present
+  loop:
+    - line: overlay
+      regexp: '^overlay$'
+    - line: br_netfilter
+      regexp: '^br_netfilter$'
+  tags: containerd
+
+- name: Enable IPv4 packet forwarding and iptables
+  become: true
+  ansible.posix.sysctl:
+    name: "{{ item }}"
+    value: '1'
+    sysctl_file: /etc/sysctl.d/kubernetes.conf
+    sysctl_set: true
+    state: present
+    reload: true
+  with_items:
+    - net.ipv4.ip_forward
+    - net.bridge.bridge-nf-call-iptables
+    - net.bridge.bridge-nf-call-ip6tables
+    - vm.overcommit_memory
+  tags: containerd
+
+- name: Ensure CNI bin directory exists
+  become: true
+  ansible.builtin.file:
+    path: /opt/cni/bin
+    recurse: true
+    state: directory
+  tags: containerd
+
+- name: Ensure temporary containerd directory exists
+  become: true
+  ansible.builtin.file:
+    path: /tmp/containerd
+    recurse: true
+    state: directory
+  tags: containerd
+
+- name: Download the Kubernetes components
+  block:
+    - name: Download CNI plugins
+      become: true
+      ansible.builtin.get_url:
+        url: https://github.com/containernetworking/plugins/releases/download/v{{ cni_version }}/cni-plugins-linux-{{ system_architecture }}-v{{ cni_version }}.tgz
+        dest: /tmp/cni-plugins-linux-{{ system_architecture }}-v{{ cni_version }}.tgz
+      tags: containerd
+
+    - name: Extract CNI plugins archive
+      become: true
+      ansible.builtin.unarchive:
+        src: /tmp/cni-plugins-linux-{{ system_architecture }}-v{{ cni_version }}.tgz
+        dest: /opt/cni/bin
+        mode: '0755'
+        remote_src: true
+      tags: containerd
+
+    - name: Remove the non executable files
+      become: true
+      ansible.builtin.file:
+        path: /opt/cni/bin/{{ item }}
+        state: absent
+      with_items:
+        - LICENSE
+        - README.md
+      tags: containerd
+
+    - name: Download containerd
+      become: true
+      ansible.builtin.get_url:
+        url: https://github.com/containerd/containerd/releases/download/v{{ containerd_version }}/containerd-{{ containerd_version }}-linux-{{ system_architecture }}.tar.gz
+        dest: /tmp/containerd-{{ containerd_version }}-linux-{{ system_architecture }}.tar.gz
+      tags: containerd
+
+    - name: Extract containerd archive
+      become: true
+      ansible.builtin.unarchive:
+        src: /tmp/containerd-{{ containerd_version }}-linux-{{ system_architecture }}.tar.gz
+        dest: /tmp/containerd
+        mode: '0755'
+        remote_src: true
+      tags: containerd
+
+    - name: Move containerd files in to place
+      become: true
+      ansible.builtin.copy:
+        src: /tmp/containerd/bin/{{ item }}
+        dest: /bin/{{ item }}
+        mode: '0755'
+        remote_src: true
+      with_items:
+        - containerd
+        - containerd-shim-runc-v2
+        - containerd-stress
+        - ctr
+      tags: containerd
+
+    - name: Download crictl
+      become: true
+      ansible.builtin.get_url:
+        url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ crictl_version }}/crictl-v{{ crictl_version }}-linux-{{ system_architecture }}.tar.gz
+        dest: /tmp/crictl-v{{ crictl_version }}-linux-{{ system_architecture }}.tar.gz
+      tags: containerd
+    
+    - name: Extract crictl archive
+      become: true
+      ansible.builtin.unarchive:
+        src: /tmp/crictl-v{{ crictl_version }}-linux-{{ system_architecture }}.tar.gz
+        dest: /tmp
+        mode: '0755'
+        remote_src: true
+      tags: containerd
+
+    - name: Move crictl files in to place
+      become: true
+      ansible.builtin.copy:
+        src: /tmp/crictl
+        dest: /usr/local/bin/crictl
+        mode: '0755'
+        remote_src: true
+      tags: containerd
+
+    - name: Download the Kubernetes files
+      become: true
+      ansible.builtin.get_url:
+        url: https://dl.k8s.io/v{{ k8s_version }}/bin/linux/{{ system_architecture }}/{{ item }}
+        dest: /usr/local/bin/{{ item }}
+        mode: '0755'
+      with_items:
+        - kube-proxy
+        - kubeadm
+        - kubectl
+        - kubelet
+      tags: kubernetes
+
+    - name: Download runc
+      become: true
+      ansible.builtin.get_url:
+        url: https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/runc.{{ system_architecture }}
+        dest: /usr/local/sbin/runc
+        tmp_dest: /tmp
+        mode: '0755'
+      tags: containerd

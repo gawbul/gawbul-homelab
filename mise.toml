@@ -1,0 +1,250 @@
+[tools]
+ansible = "latest"
+container-structure-test = "latest"
+cosign = "latest"
+flux2 = "latest"
+go = "latest"
+helm = "latest"
+hk = "latest"
+jq = "latest"
+k9s = "latest"
+kubectl = "latest"
+kubectx = "latest"
+pkl = "latest"
+python = "latest"
+shellcheck = "latest"
+skaffold = "latest"
+slsa-verifier = "latest"
+usage = "latest"
+yq = "latest"
+
+[env]
+HOMELAB_NODES = "eniac-node1 eniac-node2 eniac-node3 eniac-node4"
+HOMELAB_IPS = "192.168.50.4 192.168.50.5 192.168.50.6 192.168.50.7"
+K8S_CLUSTER_NAME = "eniac"
+K8S_CONTROL_PLANE_NODE = "eniac-node1"
+K8S_WORKER_NODES = "eniac-node1 eniac-node2 eniac-node3 eniac-node4"
+K8S_KUBECONFIG_ROLES = "kube-proxy kube-controller-manager kube-scheduler admin"
+K8S_CERTIFICATES = "admin eniac-node1 eniac-node2 eniac-node3 eniac-node4 front-proxy-client kube-proxy kube-scheduler kube-controller-manager kube-api-server service-accounts"
+
+[tasks.prelint]
+description = "Run prelint commands"
+run = "echo prelint"
+
+[tasks.postlint]
+description = "Run postlint commands"
+run = "echo postlint"
+
+[tasks.ssh-command-run]
+description = "Run a command over SSH on the remote nodes"
+run = """
+for node in $HOMELAB_NODES; do
+  ssh $node {{arg(name="command")}}
+done
+"""
+
+[tasks.ansible-playbook-run]
+description = "Run the Ansible playbooks using the hosts file"
+run = """
+ansible-playbook --inventory hosts site.yaml --extra-vars "@flux_github_token.yaml"
+"""
+
+[tasks.etc-hosts-set]
+description = "Set the hostnames in /etc/hosts"
+run = """
+sudo sed -E -i '' '/^.*[a-z.-]+kubernetes.local$/d' /etc/hosts
+read -r -a NODE_IPS <<< "${HOMELAB_IPS}"
+read -r -a NODE_NAMES <<< "${HOMELAB_NODES}"
+for i in {0..3}; do
+  echo "${NODE_IPS[$i]}\t${NODE_NAMES[$i]}.kubernetes.local" | sudo tee -a /etc/hosts
+done
+"""
+
+[tasks.ssl-ca-certificate-generate]
+description = "Generate the SSL CA certificate"
+run = """
+openssl genrsa -out certs/ca.key 4096
+
+openssl req -x509 -new -sha512 -noenc \
+  -key certs/ca.key -days 3653 \
+  -config config/ca.conf \
+  -out certs/ca.crt
+"""
+
+[tasks.ssl-certificates-generate]
+description = "Generate the client and server SSL certificates"
+run = """
+for i in ${K8S_CERTIFICATES[*]}; do
+  openssl genrsa -out "certs/${i}.key" 4096
+
+  openssl req -new -key "certs/${i}.key" -sha256 \
+    -config "config/ca.conf" -section ${i} \
+    -out "certs/${i}.csr"
+
+  openssl x509 -req -days 3653 -in "certs/${i}.csr" \
+    -copy_extensions copyall \
+    -sha256 -CA "certs/ca.crt" \
+    -CAkey "certs/ca.key" \
+    -CAcreateserial \
+    -out "certs/${i}.crt"
+done
+"""
+
+[tasks.kubeconfig-kubelet-generate]
+description = "Generate the kubelet kubeconfig files"
+run = """
+for node in ${K8S_WORKER_NODES[*]}; do
+  kubectl config set-cluster ${K8S_CLUSTER_NAME} \
+    --certificate-authority=certs/ca.crt \
+    --embed-certs=true \
+    --server=https://${K8S_CONTROL_PLANE_NODE}.kubernetes.local:6443 \
+    --kubeconfig=kubeconfig/${node}.kubeconfig
+
+  kubectl config set-credentials system:node:${node} \
+    --client-certificate=certs/${node}.crt \
+    --client-key=certs/${node}.key \
+    --embed-certs=true \
+    --kubeconfig=kubeconfig/${node}.kubeconfig
+
+  kubectl config set-context default \
+    --cluster=${K8S_CLUSTER_NAME} \
+    --user=system:node:${node} \
+    --kubeconfig=kubeconfig/${node}.kubeconfig
+
+  kubectl config use-context default \
+    --kubeconfig=kubeconfig/${node}.kubeconfig
+done
+"""
+
+[tasks.kubeconfig-kube-proxy-generate]
+description = "Generate the kube-proxy kubeconfig file"
+run = """
+kubectl config set-cluster ${K8S_CLUSTER_NAME} \
+  --certificate-authority=certs/ca.crt \
+  --embed-certs=true \
+  --server=https://${K8S_CONTROL_PLANE_NODE}.kubernetes.local:6443 \
+  --kubeconfig=kubeconfig/kube-proxy.kubeconfig
+
+kubectl config set-credentials system:kube-proxy \
+  --client-certificate=certs/kube-proxy.crt \
+  --client-key=certs/kube-proxy.key \
+  --embed-certs=true \
+  --kubeconfig=kubeconfig/kube-proxy.kubeconfig
+
+kubectl config set-context default \
+  --cluster=${K8S_CLUSTER_NAME} \
+  --user=system:kube-proxy \
+  --kubeconfig=kubeconfig/kube-proxy.kubeconfig
+
+kubectl config use-context default \
+  --kubeconfig=kubeconfig/kube-proxy.kubeconfig
+"""
+
+[tasks.kubeconfig-kube-controller-manager-generate]
+description = "Generate the kube-controller-manager kubeconfig file"
+run = """
+kubectl config set-cluster ${K8S_CLUSTER_NAME} \
+  --certificate-authority=certs/ca.crt \
+  --embed-certs=true \
+  --server=https://${K8S_CONTROL_PLANE_NODE}.kubernetes.local:6443 \
+  --kubeconfig=kubeconfig/kube-controller-manager.kubeconfig
+
+kubectl config set-credentials system:kube-controller-manager \
+  --client-certificate=certs/kube-controller-manager.crt \
+  --client-key=certs/kube-controller-manager.key \
+  --embed-certs=true \
+  --kubeconfig=kubeconfig/kube-controller-manager.kubeconfig
+
+kubectl config set-context default \
+  --cluster=${K8S_CLUSTER_NAME} \
+  --user=system:kube-controller-manager \
+  --kubeconfig=kubeconfig/kube-controller-manager.kubeconfig
+
+kubectl config use-context default \
+  --kubeconfig=kubeconfig/kube-controller-manager.kubeconfig
+"""
+
+[tasks.kubeconfig-kube-scheduler-generate]
+description = "Generate the kube-scheduler kubeconfig file"
+run = """
+kubectl config set-cluster ${K8S_CLUSTER_NAME} \
+  --certificate-authority=certs/ca.crt \
+  --embed-certs=true \
+  --server=https://${K8S_CONTROL_PLANE_NODE}.kubernetes.local:6443 \
+  --kubeconfig=kubeconfig/kube-scheduler.kubeconfig
+
+kubectl config set-credentials system:kube-scheduler \
+  --client-certificate=certs/kube-scheduler.crt \
+  --client-key=certs/kube-scheduler.key \
+  --embed-certs=true \
+  --kubeconfig=kubeconfig/kube-scheduler.kubeconfig
+
+kubectl config set-context default \
+  --cluster=${K8S_CLUSTER_NAME} \
+  --user=system:kube-scheduler \
+  --kubeconfig=kubeconfig/kube-scheduler.kubeconfig
+
+kubectl config use-context default \
+  --kubeconfig=kubeconfig/kube-scheduler.kubeconfig
+"""
+
+[tasks.kubeconfig-admin-generate]
+description = "Generate the admin kubeconfig file"
+run = """
+kubectl config set-cluster ${K8S_CLUSTER_NAME} \
+  --certificate-authority=certs/ca.crt \
+  --embed-certs=true \
+  --server=https://${K8S_CONTROL_PLANE_NODE}.kubernetes.local:6443 \
+  --kubeconfig=kubeconfig/admin.kubeconfig
+
+kubectl config set-credentials admin \
+  --client-certificate=certs/admin.crt \
+  --client-key=certs/admin.key \
+  --embed-certs=true \
+  --kubeconfig=kubeconfig/admin.kubeconfig
+
+kubectl config set-context default \
+  --cluster=${K8S_CLUSTER_NAME} \
+  --user=admin \
+  --kubeconfig=kubeconfig/admin.kubeconfig
+
+kubectl config use-context default \
+  --kubeconfig=kubeconfig/admin.kubeconfig
+"""
+
+[tasks.kubeconfig-local-generate]
+description = "Generate the local kubeconfig file"
+run = """
+  kubectl config set-cluster ${K8S_CLUSTER_NAME} \
+    --certificate-authority=certs/ca.crt \
+    --embed-certs=true \
+    --server=https://${K8S_CONTROL_PLANE_NODE}.kubernetes.local:6443
+
+  kubectl config set-credentials admin \
+    --client-certificate=certs/admin.crt \
+    --client-key=certs/admin.key
+
+  kubectl config set-context ${K8S_CLUSTER_NAME} \
+    --cluster=${K8S_CLUSTER_NAME} \
+    --user=admin
+
+  kubectl config use-context ${K8S_CLUSTER_NAME}
+"""
+
+[tasks.kubeconfig-generate]
+description = "Wrapper task to generate all kubeconfig files"
+depends = [
+  "kubeconfig-kubelet-generate",
+  "kubeconfig-kube-proxy-generate",
+  "kubeconfig-kube-controller-manager-generate",
+  "kubeconfig-kube-scheduler-generate",
+  "kubeconfig-admin-generate",
+  "kubeconfig-local-generate"
+]
+
+[tasks.encryption-config-generate]
+description = "Generate the data encryption config"
+run = """
+export ENCRYPTION_KEY=$(head -c 32 /dev/urandom | base64)
+envsubst < config/encryption-configuration.yaml | tee encryption-config.yaml
+"""
