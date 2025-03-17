@@ -55,4 +55,5 @@
       --branch={{ gitops_branch }} \
       --path={{ gitops_path}} \
       --personal \
-      --components source-controller,kustomize-controller,helm-controller,notification-controller
+      --components source-controller,kustomize-controller,helm-controller,notification-controller \
+      --components-extra image-reflector-controller,image-automation-controller
