@@ -2,6 +2,7 @@
 ansible = "latest"
 container-structure-test = "latest"
 cosign = "latest"
+flux2 = "latest"
 go = "latest"
 helm = "latest"
 hk = "latest"
@@ -45,7 +46,7 @@ done
 [tasks.ansible-playbook-run]
 description = "Run the Ansible playbooks using the hosts file"
 run = """
-ansible-playbook -i hosts site.yaml
+ansible-playbook --inventory hosts site.yaml --extra-vars "@flux_github_token.yaml"
 """
 
 [tasks.etc-hosts-set]

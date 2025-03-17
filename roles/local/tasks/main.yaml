@@ -13,7 +13,7 @@
 
 - name: Taint control plane to allow scheduling only certain jobs
   ansible.builtin.shell: |
-    kubectl taint nodes eniac-node1 node-role.kubernetes.io/control-plane:NoSchedule
+    kubectl taint nodes eniac-node1 node-role.kubernetes.io/control-plane:NoSchedule --overwrite
 
 - name: Install CoreDNS
   ansible.builtin.shell: |
@@ -23,7 +23,7 @@
 
 - name: Install the local-path-provisioner
   ansible.builtin.shell: |
-    kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v0.0.31/deploy/local-path-storage.yaml
+    kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v{{ local_path_version }}/deploy/local-path-storage.yaml
     kubectl wait deployments/local-path-provisioner --namespace=local-path-storage --for=condition=Available --timeout=300s
 
 - name: Install the NFS CSI driver
@@ -40,16 +40,19 @@
 - name: Install the StorageClass
   ansible.builtin.command: kubectl apply -f /tmp/storage-class.yaml
 
-- name: Install cert-manager
-  ansible.builtin.shell: |
-    helm repo add jetstack https://charts.jetstack.io --force-update
-    helm upgrade --install cert-manager jetstack/cert-manager --namespace cert-manager --create-namespace --version v1.17.0 --set crds.enabled=true --set global.leaderElection.namespace=cert-manager
-    kubectl wait deployments/cert-manager --namespace=cert-manager --for=condition=Available --timeout=300s
-    kubectl wait deployments/cert-manager-cainjector --namespace=cert-manager --for=condition=Available --timeout=300s
-    kubectl wait deployments/cert-manager-webhook --namespace=cert-manager --for=condition=Available --timeout=300s
-
 - name: Install Metrics Server
   ansible.builtin.shell: |
     helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/ --force-update
     helm upgrade --install metrics-server metrics-server/metrics-server
     kubectl wait deployments/metrics-server --for=condition=Available --timeout=300s
+
+- name: Install Flux
+  ansible.builtin.shell: |
+    echo "{{ github_token }}" | flux bootstrap github \
+      --token-auth \
+      --owner={{ github_username }} \
+      --repository={{ gitops_repository }} \
+      --branch={{ gitops_branch }} \
+      --path={{ gitops_path}} \
+      --personal \
+      --components source-controller,kustomize-controller,helm-controller,notification-controller

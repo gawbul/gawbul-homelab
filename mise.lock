@@ -16,6 +16,13 @@ backend = "aqua:sigstore/cosign"
 [tools.cosign.checksums]
 cosign-darwin-arm64 = "sha256:edfc761b27ced77f0f9ca288ff4fac7caa898e1e9db38f4dfdf72160cdf8e638"
 
+[tools.flux2]
+version = "2.5.1"
+backend = "aqua:fluxcd/flux2"
+
+[tools.flux2.checksums]
+"flux_2.5.1_darwin_arm64.tar.gz" = "sha256:68c025b8059934457978d8952c0c62fd06c585d46b334804da72d268eaf630d4"
+
 [tools.go]
 version = "1.24.1"
 backend = "core:go"

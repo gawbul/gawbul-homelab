@@ -43,3 +43,7 @@ kubeconfig/
 
 # ignore encryption configuration
 encryption-config.yaml
+
+# ignore Ansible Vault files
+.vault_pass
+flux_github_token.yaml
