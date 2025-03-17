@@ -2,25 +2,31 @@
 # This playbook deploys the server configuration stack to all relevant nodes in this site.
 
 - name: Apply the common configuration to all nodes
-  hosts: all
+  hosts: all, !local
   remote_user: gawbul
   roles:
     - common
 
 - name: Apply the configuration to all K8s nodes
-  hosts: [k8s-control-planes, k8s-worker-nodes]
+  hosts: [k8s_control_planes, k8s_worker_nodes]
   remote_user: gawbul
   roles:
     - k8s_all_nodes
 
 - name: Configure and deploy the Kubernetes Control Plane Node
-  hosts: k8s-control-planes
+  hosts: k8s_control_planes
   remote_user: gawbul
   roles:
-    - k8s_control_plane
+    - k8s_control_planes
 
 - name: Configure and deploy the Kubernetes Worker Nodes
-  hosts: k8s-worker-nodes
+  hosts: k8s_worker_nodes
   remote_user: gawbul
   roles:
-    - k8s_worker_node
+    - k8s_worker_nodes
+
+- name: Bootstrap the cluster with the relevant configuration
+  hosts: local
+  remote_user: gawbul
+  roles:
+    - local

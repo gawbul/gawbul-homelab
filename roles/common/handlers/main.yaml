@@ -7,11 +7,3 @@
   async: 45
   poll: 0
   tags: netplan
-
-- name: Restart NetworkManager
-  become: true
-  ansible.builtin.systemd_service:
-    name: NetworkManager
-    daemon_reload: true
-    state: restarted
-  tags: network-manager

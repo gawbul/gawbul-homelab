@@ -1,8 +1,8 @@
 ---
 # This variables file is used by all host groups.
 
-configuration_repository: "git@github.com:gawbul/gawbul-homelab.git"
 wifi_interface: "wlan0"
+ethernet_interface: "eth0"
 
 ubuntu_codename: "noble"
 system_architecture: "arm64"
@@ -22,23 +22,81 @@ nodes:
       name: eniac-node1
       fqdn: eniac-node1.kubernetes.local
       ip_address: "192.168.50.4"
+      pod_subnet: "10.200.0.0/24"
   eniac-node2:
     node_info:
       name: eniac-node2
       fqdn: eniac-node2.kubernetes.local
       ip_address: "192.168.50.5"
-      pod_subnet: "10.200.0.0/24"
+      pod_subnet: "10.200.1.0/24"
+      routes:
+        - line: "        - to: 10.200.0.0/24"
+          regexp: "^.*- to: 10.200.0.0/24$"
+          insertafter: "^.*via: {{ router_gateway_ip }}$"
+        - line: "          via: 192.168.50.4"
+          regexp: "^.*via: 192.168.50.4$"
+          insertafter: "^.*- to: 10.200.0.0/24$"
+        - line: "        - to: 10.200.2.0/24"
+          regexp: "^.*- to: 10.200.2.0/24$"
+          insertafter: "^.*via: 192.168.50.4$"
+        - line: "          via: 192.168.50.6"
+          regexp: "^.*via: 192.168.50.6$"
+          insertafter: "^.*- to: 10.200.2.0/24$"
+        - line: "        - to: 10.200.3.0/24"
+          regexp: "^.*- to: 10.200.3.0/24$"
+          insertafter: "^.*via: 192.168.50.6$"
+        - line: "          via: 192.168.50.7"
+          regexp: "^.*via: 192.168.50.7$"
+          insertafter: "^.*- to: 10.200.3.0/24$"
   eniac-node3:
     node_info:
       name: eniac-node3
       fqdn: eniac-node3.kubernetes.local
       ip_address: "192.168.50.6"
-      pod_subnet: "10.200.1.0/24"
+      pod_subnet: "10.200.2.0/24"
+      routes:
+        - line: "        - to: 10.200.0.0/24"
+          regexp: "^.*- to: 10.200.0.0/24$"
+          insertafter: "^.*via: {{ router_gateway_ip }}$"
+        - line: "          via: 192.168.50.4"
+          regexp: "^.*via: 192.168.50.4$"
+          insertafter: "^.*- to: 10.200.0.0/24$"
+        - line: "        - to: 10.200.1.0/24"
+          regexp: "^.*- to: 10.200.1.0/24$"
+          insertafter: "^.*via: 192.168.50.4$"
+        - line: "          via: 192.168.50.5"
+          regexp: "^.*via: 192.168.50.5$"
+          insertafter: "^.*- to: 10.200.1.0/24$"
+        - line: "        - to: 10.200.3.0/24"
+          regexp: "^.*- to: 10.200.3.0/24$"
+          insertafter: "^.*via: 192.168.50.5$"
+        - line: "          via: 192.168.50.7"
+          regexp: "^.*via: 192.168.50.7$"
+          insertafter: "^.*- to: 10.200.3.0/24$"
   eniac-node4:
     node_info:
       name: eniac-node4
       fqdn: eniac-node4.kubernetes.local
       ip_address: "192.168.50.7"
-      pod_subnet: "10.200.2.0/24"
+      pod_subnet: "10.200.3.0/24"
+      routes:
+        - line: "        - to: 10.200.0.0/24"
+          regexp: "^.*- to: 10.200.0.0/24$"
+          insertafter: "^.*via: {{ router_gateway_ip }}$"
+        - line: "          via: 192.168.50.4"
+          regexp: "^.*via: 192.168.50.4$"
+          insertafter: "^.*- to: 10.200.0.0/24$"
+        - line: "        - to: 10.200.1.0/24"
+          regexp: "^.*- to: 10.200.1.0/24$"
+          insertafter: "^.*via: 192.168.50.4$"
+        - line: "          via: 192.168.50.5"
+          regexp: "^.*via: 192.168.50.5$"
+          insertafter: "^.*- to: 10.200.1.0/24$"
+        - line: "        - to: 10.200.2.0/24"
+          regexp: "^.*- to: 10.200.2.0/24$"
+          insertafter: "^.*via: 192.168.50.5$"
+        - line: "          via: 192.168.50.6"
+          regexp: "^.*via: 192.168.50.6$"
+          insertafter: "^.*- to: 10.200.2.0/24$"
 
 router_gateway_ip: "192.168.50.1"

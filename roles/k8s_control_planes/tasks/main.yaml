@@ -81,7 +81,7 @@
     name: etcd
     daemon_reload: true
     enabled: true
-    state: started
+    state: restarted
   tags: etcd
 
 - name: Create the kubernetes directories
@@ -162,7 +162,7 @@
     name: "{{ item }}"
     daemon_reload: true
     enabled: true
-    state: started
+    state: restarted
   with_items:
     - kube-apiserver
     - kube-controller-manager
@@ -188,11 +188,4 @@
 - name: Apply the RBAC permissions to the cluster
   become: true
   ansible.builtin.command: kubectl apply -f /tmp/kube-apiserver-to-kubelet.yaml --kubeconfig /tmp/admin.kubeconfig
-  tags: kubernetes
-
-- name: Add network routes for the pod networks
-  become: true
-  ansible.builtin.command: "ip route add {{ item.value['node_info'].pod_subnet }} via {{ item.value['node_info'].ip_address }}"
-  when: item.key != inventory_hostname
-  loop: "{{ nodes | dict2items }}"
   tags: kubernetes

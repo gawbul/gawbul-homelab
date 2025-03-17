@@ -16,7 +16,7 @@ ExecStart=/usr/local/bin/etcd \
   --initial-cluster-token etcd-cluster-0 \
   --initial-cluster controller=http://127.0.0.1:2380 \
   --initial-cluster-state new \
-  --data-dir=/var/lib/etc
+  --data-dir=/var/lib/etcd
 Restart=on-failure
 RestartSec=10s
 LimitNOFILE=40000

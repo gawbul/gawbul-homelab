@@ -3,10 +3,12 @@ ansible = "latest"
 container-structure-test = "latest"
 cosign = "latest"
 go = "latest"
+helm = "latest"
 hk = "latest"
 jq = "latest"
 k9s = "latest"
 kubectl = "latest"
+kubectx = "latest"
 pkl = "latest"
 python = "latest"
 shellcheck = "latest"
@@ -18,10 +20,10 @@ yq = "latest"
 [env]
 HOMELAB_NODES = "eniac-node1 eniac-node2 eniac-node3 eniac-node4"
 HOMELAB_IPS = "192.168.50.4 192.168.50.5 192.168.50.6 192.168.50.7"
-K8S_CERTIFICATES = "admin eniac-node2 eniac-node3 eniac-node4 kube-proxy kube-scheduler kube-controller-manager kube-api-server service-accounts"
+K8S_CERTIFICATES = "admin eniac-node1 eniac-node2 eniac-node3 eniac-node4 kube-proxy kube-scheduler kube-controller-manager kube-api-server service-accounts"
 K8S_CLUSTER_NAME = "eniac"
 K8S_CONTROL_PLANE_NODE = "eniac-node1"
-K8S_WORKER_NODES = "eniac-node2 eniac-node3 eniac-node4"
+K8S_WORKER_NODES = "eniac-node1 eniac-node2 eniac-node3 eniac-node4"
 K8S_KUBECONFIG_ROLES = "kube-proxy kube-controller-manager kube-scheduler admin"
 
 [tasks.prelint]
@@ -210,15 +212,8 @@ kubectl config use-context default \
   --kubeconfig=kubeconfig/admin.kubeconfig
 """
 
-[tasks.kubeconfig-generate]
-description = "Wrapper task to generate all kubeconfig files"
-depends = [
-  "kubeconfig-kubelet-generate",
-  "kubeconfig-kube-proxy-generate",
-  "kubeconfig-kube-controller-manager-generate",
-  "kubeconfig-kube-scheduler-generate",
-  "kubeconfig-admin-generate",
-]
+[tasks.kubeconfig-local-generate]
+description = "Generate the local kubeconfig file"
 run = """
   kubectl config set-cluster ${K8S_CLUSTER_NAME} \
     --certificate-authority=certs/ca.crt \
@@ -235,6 +230,17 @@ run = """
 
   kubectl config use-context ${K8S_CLUSTER_NAME}
 """
+
+[tasks.kubeconfig-generate]
+description = "Wrapper task to generate all kubeconfig files"
+depends = [
+  "kubeconfig-kubelet-generate",
+  "kubeconfig-kube-proxy-generate",
+  "kubeconfig-kube-controller-manager-generate",
+  "kubeconfig-kube-scheduler-generate",
+  "kubeconfig-admin-generate",
+  "kubeconfig-local-generate"
+]
 
 [tasks.encryption-config-generate]
 description = "Generate the data encryption config"

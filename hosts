@@ -1,7 +1,11 @@
-[k8s-control-planes]
+[local]
+localhost   ansible_connection=local
+
+[k8s_control_planes]
 eniac-node1
 
-[k8s-worker-nodes]
+[k8s_worker_nodes]
+eniac-node1
 eniac-node2
 eniac-node3
 eniac-node4

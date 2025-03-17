@@ -1,5 +1,5 @@
 {
-  "cniVersion": "1.0.0",
+  "cniVersion": "1.1.0",
   "name": "bridge",
   "type": "bridge",
   "bridge": "cni0",
@@ -8,8 +8,12 @@
   "ipam": {
     "type": "host-local",
     "ranges": [
-      [{"subnet": "{{ item.value.pod_subnet }}"}]
+      [{
+        "subnet": "{{ item.value.pod_subnet }}"
+      }]
     ],
-    "routes": [{"dst": "0.0.0.0/0"}]
+    "routes": [{
+      "dst": "0.0.0.0/0"
+    }]
   }
 }

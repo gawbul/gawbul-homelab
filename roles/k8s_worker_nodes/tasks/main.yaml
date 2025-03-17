@@ -1,6 +1,28 @@
 ---
 # This playbook contains common plays that will be run on the Kubernetes worker nodes.
 
+- name: Create nf-modules.conf file
+  become: true
+  ansible.builtin.file:
+    path: /etc/modules-load.d/nf-conntrack.conf
+    state: touch
+    mode: '0644'
+  tags: containerd
+
+- name: Ensure Netfilter modules are loaded at boot
+  become: true
+  ansible.builtin.lineinfile:
+    dest: /etc/modules-load.d/nf-conntrack.conf
+    line: "{{ item }}"
+  with_items:
+    - nf_conntrack
+  tags: containerd
+
+- name: Run modprobe to load Netfilter modules
+  become: true
+  ansible.builtin.shell: modprobe -a nf_conntrack
+  tags: containerd
+
 - name: Ensure kubelet and kube-proxy directories exists
   become: true
   ansible.builtin.file:
@@ -39,6 +61,7 @@
         dest: /var/lib/kubelet/kubeconfig
       when: item == inventory_hostname
       with_items:
+        - eniac-node1
         - eniac-node2
         - eniac-node3
         - eniac-node4
@@ -137,29 +160,8 @@
   ansible.builtin.template:
     src: kube-proxy-config.yaml.j2
     dest: /var/lib/kube-proxy/kube-proxy-config.yaml
+  with_dict: "{{ nodes[inventory_hostname] }}"
   tags: kubernetes
-
-- name: Create nf-modules.conf file
-  become: true
-  ansible.builtin.file:
-    path: /etc/modules-load.d/nf-conntrack.conf
-    state: touch
-    mode: '0644'
-  tags: containerd
-
-- name: Ensure Netfilter modules are loaded at boot
-  become: true
-  ansible.builtin.lineinfile:
-    dest: /etc/modules-load.d/nf-conntrack.conf
-    line: "{{ item }}"
-  with_items:
-    - nf_conntrack
-  tags: containerd
-
-- name: Run modprobe to load Netfilter modules
-  become: true
-  ansible.builtin.shell: modprobe -a nf_conntrack
-  tags: containerd
 
 - name: Start the kubernetes services
   become: true
@@ -167,18 +169,9 @@
     name: "{{ item }}"
     daemon_reload: true
     enabled: true
-    state: started
+    state: restarted
   with_items:
     - containerd
     - kubelet
     - kube-proxy
-  tags: kubernetes
-
-- name: Add network routes for the pod networks
-  become: true
-  ansible.builtin.command: "ip route add {{ item.value['node_info'].pod_subnet }} via {{ item.value['node_info'].ip_address }}"
-  when:
-    - item.key != inventory_hostname
-    - item.key != "eniac-node1"
-  loop: "{{ nodes | dict2items }}"
   tags: kubernetes

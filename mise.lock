@@ -23,6 +23,13 @@ backend = "core:go"
 [tools.go.checksums]
 "go1.24.1.darwin-arm64.tar.gz" = "sha256:295581b5619acc92f5106e5bcb05c51869337eb19742fdfa6c8346c18e78ff88"
 
+[tools.helm]
+version = "3.17.2"
+backend = "aqua:helm/helm"
+
+[tools.helm.checksums]
+"helm-v3.17.2-darwin-arm64.tar.gz" = "sha256:b843cebcbebc9eccb1e43aba9cca7693d32e9f2c4a35344990e3b7b381933948"
+
 [tools.hk]
 version = "0.5.0"
 backend = "aqua:jdx/hk"
@@ -38,18 +45,25 @@ backend = "aqua:jqlang/jq"
 jq-macos-arm64 = "sha256:0bbe619e663e0de2c550be2fe0d240d076799d6f8a652b70fa04aea8a8362e8a"
 
 [tools.k9s]
-version = "0.40.5"
+version = "0.40.9"
 backend = "aqua:derailed/k9s"
 
 [tools.k9s.checksums]
-"k9s_Darwin_arm64.tar.gz" = "sha256:24ba917037c8f7d397bbf5b1eacad18b9c197ea43fa426f69425ae4303c59bf3"
+"k9s_Darwin_arm64.tar.gz" = "sha256:8ef3751667fc8c69ca66b6b46886be2b680498f43b751bc35082a1f9d09bb5d3"
 
 [tools.kubectl]
-version = "1.32.2"
+version = "1.32.3"
 backend = "aqua:kubernetes/kubectl"
 
 [tools.kubectl.checksums]
-kubectl = "sha256:31b6318deaa72014b72121e1c7a2e12496d077cee49bbeda94250aec4c978ffb"
+kubectl = "sha256:a110af64fc31e2360dd0f18e4110430e6eedda1a64f96e9d89059740a7685bbd"
+
+[tools.kubectx]
+version = "0.9.5"
+backend = "aqua:ahmetb/kubectx"
+
+[tools.kubectx.checksums]
+"kubectx_v0.9.5_darwin_arm64.tar.gz" = "sha256:1ea0dff5c6e7ebbe77b9e689c8b4ca17e8406b36fea88bfc221fefc25ae71a60"
 
 [tools.pkl]
 version = "0.28.1"
