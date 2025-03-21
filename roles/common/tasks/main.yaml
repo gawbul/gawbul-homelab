@@ -37,8 +37,8 @@
   become: true
   ansible.builtin.lineinfile:
     path: /etc/netplan/50-cloud-init.yaml
-    regexp: '^.*activation-mode: "manual"$'
-    line: '      activation-mode: "manual"'
+    regexp: '^.*activation-mode:.*$'
+    line: '      activation-mode: "off"'
     insertafter: '^.*dhcp4: true$'
   notify: Apply Netplan
   tags: netplan
