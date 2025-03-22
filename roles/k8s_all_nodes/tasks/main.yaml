@@ -42,7 +42,7 @@
     - line: overlay
       regexp: '^overlay$'
     - line: br_netfilter
-      regexp: '^br_netfilter$'
+      regexp: '^br_netfilter$'      
   tags: containerd
 
 - name: Enable IPv4 packet forwarding and iptables
