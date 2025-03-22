@@ -64,11 +64,21 @@
   register: kernelparams
   tags: kubernetes
 
+- name: Enable RTC recharging
+  become: true
+  ansible.builtin.lineinfile:
+    path: /boot/firmware/config.txt
+    regexp: '^dtparam=rtc_bbat_vchg=3000000$'
+    line: 'dtparam=rtc_bbat_vchg=3000000'
+    mode: '0600'
+  registry: rtcbattery
+  tags: battery
+
 - name: Reboot the nodes to update the Kernel arguments
   become: true
   ansible.builtin.reboot:
     reboot_timeout: 600
-  when: kernelparams.changed
+  when: kernelparams.changed or rtcbattery.changed
 
 - name: Upgrade all existing packages
   become: true
