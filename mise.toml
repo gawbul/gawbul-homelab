@@ -248,3 +248,15 @@ run = """
 export ENCRYPTION_KEY=$(head -c 32 /dev/urandom | base64)
 envsubst < config/encryption-configuration.yaml | tee encryption-config.yaml
 """
+
+[tasks.age-generate-keys]
+description = "Generate age encryption keys"
+run = """
+age-keygen -o ~/.config/sops/age/keys.txt
+"""
+
+[tasks.sops-secret-create]
+description = "Create sops secret in cluster"
+run = """
+kubectl create secret generic sops-age --namespace=flux-system --from-file=/Users/gawbul/.config/sops/age/keys.txt
+"""

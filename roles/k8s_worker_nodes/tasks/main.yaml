@@ -6,7 +6,7 @@
   ansible.builtin.file:
     path: /etc/modules-load.d/nf-conntrack.conf
     state: touch
-    mode: '0644'
+    mode: "0644"
   tags: containerd
 
 - name: Ensure Netfilter modules are loaded at boot
@@ -71,7 +71,7 @@
   become: true
   ansible.builtin.file:
     path: "{{ item }}"
-    mode: '0700'
+    mode: "0700"
     state: directory
   with_items:
     - /etc/cni/net.d
@@ -116,7 +116,7 @@
   become: true
   ansible.builtin.lineinfile:
     dest: /etc/containerd/config.toml
-    regexp: '(.*)SystemdCgroup = false'
+    regexp: "(.*)SystemdCgroup = false"
     line: '\1SystemdCgroup = {{ enable_systemd_cgroups }}'
     state: present
     backrefs: yes
@@ -128,15 +128,15 @@
   ansible.builtin.copy:
     src: containerd.service
     dest: /etc/systemd/system/containerd.service
-    mode: '0644'
+    mode: "0644"
   tags: containerd
 
 - name: Copy the kubelet config in to place
   become: true
-  ansible.builtin.template:
-    src: kubelet-config.yaml.j2
+  ansible.builtin.copy:
+    src: kubelet-config.yaml
     dest: /var/lib/kubelet/kubelet-config.yaml
-  with_dict: "{{ nodes[inventory_hostname] }}"
+    mode: "0644"
   tags: kubernetes
 
 - name: Copy the kubelet service file in to place
@@ -144,7 +144,7 @@
   ansible.builtin.copy:
     src: kubelet.service
     dest: /etc/systemd/system/kubelet.service
-    mode: '0644'
+    mode: "0644"
   tags: containerd
 
 - name: Copy the kube-proxy service file in to place
@@ -152,7 +152,7 @@
   ansible.builtin.copy:
     src: kube-proxy.service
     dest: /etc/systemd/system/kube-proxy.service
-    mode: '0644'
+    mode: "0644"
   tags: containerd
 
 - name: Copy the kube-proxy config in to place
