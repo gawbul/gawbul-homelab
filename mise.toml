@@ -260,3 +260,9 @@ description = "Create sops secret in cluster"
 run = """
 kubectl create secret generic sops-age --namespace=flux-system --from-file=/Users/gawbul/.config/sops/age/keys.txt
 """
+
+[tasks.flux-uninstall]
+description = "Uninstall Flux"
+run = """
+flux uninstall --namespace=flux-system
+"""
