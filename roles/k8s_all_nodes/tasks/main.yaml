@@ -5,12 +5,12 @@
   become: true
   shell: swapoff -a
   tags: swap-off
-  
+
 - name: Comment out swap entry in /etc/fstab
   become: true
   ansible.builtin.lineinfile:
     dest: /etc/fstab
-    regexp: '^(.*swap.*)$'
+    regexp: "^(.*swap.*)$"
     line: '# \1'
     backrefs: yes
     state: present
@@ -40,16 +40,16 @@
     state: present
   loop:
     - line: overlay
-      regexp: '^overlay$'
+      regexp: "^overlay$"
     - line: br_netfilter
-      regexp: '^br_netfilter$'
+      regexp: "^br_netfilter$"
   tags: containerd
 
 - name: Enable IPv4 packet forwarding and iptables
   become: true
   ansible.posix.sysctl:
     name: "{{ item }}"
-    value: '1'
+    value: "1"
     sysctl_file: /etc/sysctl.d/kubernetes.conf
     sysctl_set: true
     state: present
@@ -91,7 +91,7 @@
       ansible.builtin.unarchive:
         src: /tmp/cni-plugins-linux-{{ system_architecture }}-v{{ cni_version }}.tgz
         dest: /opt/cni/bin
-        mode: '0755'
+        mode: "0755"
         remote_src: true
       tags: containerd
 
@@ -117,8 +117,20 @@
       ansible.builtin.unarchive:
         src: /tmp/containerd-{{ containerd_version }}-linux-{{ system_architecture }}.tar.gz
         dest: /tmp/containerd
-        mode: '0755'
+        mode: "0755"
         remote_src: true
+      tags: containerd
+
+    - name: Remove old containerd files
+      become: true
+      ansible.builtin.file:
+        path: /bin/{{ item }}
+        state: absent
+      with_items:
+        - containerd
+        - containerd-shim-runc-v2
+        - containerd-stress
+        - ctr
       tags: containerd
 
     - name: Move containerd files in to place
@@ -126,7 +138,7 @@
       ansible.builtin.copy:
         src: /tmp/containerd/bin/{{ item }}
         dest: /bin/{{ item }}
-        mode: '0755'
+        mode: "0755"
         remote_src: true
       with_items:
         - containerd
@@ -141,14 +153,21 @@
         url: https://github.com/kubernetes-sigs/cri-tools/releases/download/v{{ crictl_version }}/crictl-v{{ crictl_version }}-linux-{{ system_architecture }}.tar.gz
         dest: /tmp/crictl-v{{ crictl_version }}-linux-{{ system_architecture }}.tar.gz
       tags: containerd
-    
+
     - name: Extract crictl archive
       become: true
       ansible.builtin.unarchive:
         src: /tmp/crictl-v{{ crictl_version }}-linux-{{ system_architecture }}.tar.gz
         dest: /tmp
-        mode: '0755'
+        mode: "0755"
         remote_src: true
+      tags: containerd
+
+    - name: Remove old crictl files
+      become: true
+      ansible.builtin.file:
+        path: /usr/local/bin/crictl
+        state: absent
       tags: containerd
 
     - name: Move crictl files in to place
@@ -156,16 +175,15 @@
       ansible.builtin.copy:
         src: /tmp/crictl
         dest: /usr/local/bin/crictl
-        mode: '0755'
+        mode: "0755"
         remote_src: true
       tags: containerd
 
-    - name: Download the Kubernetes files
+    - name: Remove old Kubernetes files
       become: true
-      ansible.builtin.get_url:
-        url: https://dl.k8s.io/v{{ k8s_version }}/bin/linux/{{ system_architecture }}/{{ item }}
-        dest: /usr/local/bin/{{ item }}
-        mode: '0755'
+      ansible.builtin.file:
+        path: /usr/local/bin/{{ item }}
+        state: absent
       with_items:
         - kube-proxy
         - kubeadm
@@ -173,11 +191,31 @@
         - kubelet
       tags: kubernetes
 
+    - name: Download the Kubernetes files
+      become: true
+      ansible.builtin.get_url:
+        url: https://dl.k8s.io/v{{ k8s_version }}/bin/linux/{{ system_architecture }}/{{ item }}
+        dest: /usr/local/bin/{{ item }}
+        mode: "0755"
+      with_items:
+        - kube-proxy
+        - kubeadm
+        - kubectl
+        - kubelet
+      tags: kubernetes
+
+    - name: Remove old runc files
+      become: true
+      ansible.builtin.file:
+        path: /usr/local/sbin/runc
+        state: absent
+      tags: containerd
+
     - name: Download runc
       become: true
       ansible.builtin.get_url:
         url: https://github.com/opencontainers/runc/releases/download/v{{ runc_version }}/runc.{{ system_architecture }}
         dest: /usr/local/sbin/runc
         tmp_dest: /tmp
-        mode: '0755'
+        mode: "0755"
       tags: containerd

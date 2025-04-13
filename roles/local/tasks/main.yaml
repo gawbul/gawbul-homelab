@@ -25,6 +25,7 @@
   ansible.builtin.shell: |
     kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v{{ local_path_version }}/deploy/local-path-storage.yaml
     kubectl wait deployments/local-path-provisioner --namespace=local-path-storage --for=condition=Available --timeout=300s
+    kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
 
 - name: Install the NFS CSI driver
   ansible.builtin.shell: |
