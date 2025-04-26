@@ -1,5 +1,5 @@
 ---
 # This variables file is used by the playbooks in the k8s_all_nodes group.
 
-k8s_version: "1.32"
+k8s_version: "1.33"
 k8s_cluster_cidr: "10.200.0.0/16"
