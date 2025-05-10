@@ -1,5 +1,5 @@
 [tools.ansible]
-version = "11.4.0"
+version = "11.5.0"
 backend = "pipx:ansible[uvx=false,pipx_args=--include-deps]"
 
 [tools.container-structure-test]
@@ -24,11 +24,11 @@ backend = "aqua:fluxcd/flux2"
 "flux_2.5.1_darwin_arm64.tar.gz" = "sha256:68c025b8059934457978d8952c0c62fd06c585d46b334804da72d268eaf630d4"
 
 [tools.go]
-version = "1.24.2"
+version = "1.24.3"
 backend = "core:go"
 
 [tools.go.checksums]
-"go1.24.2.darwin-arm64.tar.gz" = "sha256:b70f8b3c5b4ccb0ad4ffa5ee91cd38075df20fdbd953a1daedd47f50fbcff47a"
+"go1.24.3.darwin-arm64.tar.gz" = "sha256:64a3fa22142f627e78fac3018ce3d4aeace68b743eff0afda8aae0411df5e4fb"
 
 [tools.helm]
 version = "3.17.3"
@@ -38,11 +38,11 @@ backend = "aqua:helm/helm"
 "helm-v3.17.3-darwin-arm64.tar.gz" = "sha256:89aec43ce07b06239f1bba4a6507236bb48ae487bc5065a8e254d3ce58a16997"
 
 [tools.hk]
-version = "0.7.5"
+version = "1.0.0"
 backend = "aqua:jdx/hk"
 
 [tools.hk.checksums]
-"hk-aarch64-apple-darwin.tar.gz" = "sha256:a442a854abfd735bce2e9caf5012996ee6b3e04204720c7cb59ace22cd8512fd"
+"hk-aarch64-apple-darwin.tar.gz" = "sha256:80a671912e3678a4fe156033153015da1fa435639ea7b4797c5ecb61250768ad"
 
 [tools.jq]
 version = "1.7.1"
@@ -52,18 +52,18 @@ backend = "aqua:jqlang/jq"
 jq-macos-arm64 = "sha256:0bbe619e663e0de2c550be2fe0d240d076799d6f8a652b70fa04aea8a8362e8a"
 
 [tools.k9s]
-version = "0.50.2"
+version = "0.50.4"
 backend = "aqua:derailed/k9s"
 
 [tools.k9s.checksums]
-"k9s_Darwin_arm64.tar.gz" = "sha256:c5c79522fca10bdc53b4cafe9354ec25ecacfeac19cba24815afd8b352cb7b02"
+"k9s_Darwin_arm64.tar.gz" = "sha256:4a715a859990eef9f99ad145586467219a1989f33dda522e2a043a512f47fd71"
 
 [tools.kubectl]
-version = "1.32.3"
+version = "1.33.0"
 backend = "aqua:kubernetes/kubectl"
 
 [tools.kubectl.checksums]
-kubectl = "sha256:a110af64fc31e2360dd0f18e4110430e6eedda1a64f96e9d89059740a7685bbd"
+kubectl = "sha256:007746617abc12746dd80ad6c261c2b062269688d44c0b97aa47108c562b07c1"
 
 [tools.kubectx]
 version = "0.9.5"
@@ -73,11 +73,11 @@ backend = "aqua:ahmetb/kubectx"
 "kubectx_v0.9.5_darwin_arm64.tar.gz" = "sha256:1ea0dff5c6e7ebbe77b9e689c8b4ca17e8406b36fea88bfc221fefc25ae71a60"
 
 [tools.pkl]
-version = "0.28.1"
+version = "0.28.2"
 backend = "aqua:apple/pkl"
 
 [tools.pkl.checksums]
-pkl-macos-aarch64 = "sha256:d393dedaa7067eb5c96ff99c89e73f463a96f64b4e231bfeee42b98547b10fe0"
+pkl-macos-aarch64 = "sha256:452c75769d85c07714356f223a9d99a02bdc0bf360c0741765958e9aa080a50c"
 
 [tools.python]
 version = "3.13.3"
@@ -91,11 +91,11 @@ backend = "aqua:koalaman/shellcheck"
 "shellcheck-v0.10.0.darwin.aarch64.tar.xz" = "sha256:bbd2f14826328eee7679da7221f2bc3afb011f6a928b848c80c321f6046ddf81"
 
 [tools.skaffold]
-version = "2.15.0"
+version = "2.16.0"
 backend = "aqua:GoogleContainerTools/skaffold"
 
 [tools.skaffold.checksums]
-skaffold-darwin-arm64 = "sha256:25a4fcdb03dc8a40047b728972a466bf7715274b310849b7fab500966b051293"
+skaffold-darwin-arm64 = "sha256:b044c4936f2e519dcc58cd7d4027a0275a605b810395e6840b143f4a6349f2b9"
 
 [tools.slsa-verifier]
 version = "2.7.0"
@@ -105,15 +105,15 @@ backend = "ubi:slsa-framework/slsa-verifier"
 slsa-verifier-macos-aarch64 = "sha256:84d9122ce12e0c79080844285fd5c4976407ed3463e434a1b21b0979c46b1e55"
 
 [tools.usage]
-version = "2.0.7"
+version = "2.1.1"
 backend = "ubi:jdx/usage"
 
 [tools.usage.checksums]
-usage-macos-aarch64 = "sha256:abc249cde385b30023c01f569fcd8753b42c0d724fff2f82aaeaa5e69a176581"
+usage-macos-aarch64 = "sha256:890b4d1439692046d8e14087667fd48bbfc5046f3aa2d85233d0b43029ce3fec"
 
 [tools.yq]
-version = "4.45.1"
+version = "4.45.2"
 backend = "aqua:mikefarah/yq"
 
 [tools.yq.checksums]
-yq_darwin_arm64 = "sha256:83edb55e254993f9043d01a1515205b54ffc2c7ce815a780573da64afaf2c71b"
+yq_darwin_arm64 = "sha256:7a1d495bee143cab1444149aa6179316865351576a1c8422cc59c81a6965ecb3"
