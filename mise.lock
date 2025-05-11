@@ -52,11 +52,11 @@ backend = "aqua:jqlang/jq"
 jq-macos-arm64 = "sha256:0bbe619e663e0de2c550be2fe0d240d076799d6f8a652b70fa04aea8a8362e8a"
 
 [tools.k9s]
-version = "0.50.4"
+version = "0.50.5"
 backend = "aqua:derailed/k9s"
 
 [tools.k9s.checksums]
-"k9s_Darwin_arm64.tar.gz" = "sha256:4a715a859990eef9f99ad145586467219a1989f33dda522e2a043a512f47fd71"
+"k9s_Darwin_arm64.tar.gz" = "sha256:e8133f1b51702675976bc2214621251465777573dd1b5ce4858062d824cbd679"
 
 [tools.kubectl]
 version = "1.33.0"
