@@ -30,7 +30,7 @@
 - name: Install the NFS CSI driver
   ansible.builtin.shell: |
     helm repo add csi-driver-nfs https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts --force-update
-    helm upgrade --install csi-driver-nfs csi-driver-nfs/csi-driver-nfs --namespace kube-system --version v{{ csi_driver_version }}
+    helm upgrade --install csi-driver-nfs csi-driver-nfs/csi-driver-nfs --namespace kube-system --version v{{ nfs_csi_driver_version }}
     kubectl wait deployments/csi-nfs-controller --namespace=kube-system --for=condition=Available --timeout=300s
 
 - name: Move StorageClass file into place
