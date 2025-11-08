@@ -15,6 +15,7 @@ This is a Kubernetes homelab setup running on Raspberry Pi 5 cluster (4 nodes na
 **Domain:** kubernetes.local
 
 The cluster uses:
+
 - **etcd** for state management (on control plane)
 - **containerd** as container runtime with **runc**
 - **CNI plugins** for networking
@@ -27,11 +28,13 @@ The cluster uses:
 ## Tooling & Environment
 
 All tools are managed via **mise** (defined in `mise.toml`). Key tools include:
+
 - ansible, kubectl, helm, flux2, k9s, kubectx
 - Container tools: cosign, container-structure-test, skaffold
 - Config tools: jq, yq, pkl, shellcheck
 
 Environment variables (set in mise.toml):
+
 - `HOMELAB_NODES`: node hostnames
 - `HOMELAB_IPS`: node IP addresses
 - `K8S_CLUSTER_NAME`: "eniac"
@@ -65,7 +68,7 @@ mise run encryption-config-generate
 mise run ansible-playbook-run
 
 # Run arbitrary command on all nodes via SSH
-mise run ssh-command-run command="systemctl status kubelet"
+mise run ssh-command-run "systemctl status kubelet"
 ```
 
 ### Working with Flux CD
@@ -108,6 +111,7 @@ The main playbook is `site.yaml`, which applies roles in this order:
 **Inventory:** The `hosts` file defines node groups. Note that eniac-node1 is in both `k8s_control_planes` and `k8s_worker_nodes`.
 
 **Variables:**
+
 - `group_vars/all.yaml`: Cluster-wide settings (K8s versions, node definitions, network config)
 - `group_vars/local.yaml`: Local bootstrapping settings (GitOps repo, NFS config, versions)
 - `group_vars/k8s_*.yaml`: Role-specific variables
@@ -117,7 +121,9 @@ The main playbook is `site.yaml`, which applies roles in this order:
 ## Important Configuration Details
 
 ### Certificates Location
+
 All certificates and keys are stored in the `certs/` directory. Required certificates:
+
 - `ca.crt` / `ca.key`: Root CA
 - `admin.crt` / `admin.key`: Admin user
 - `{node}.crt` / `{node}.key`: Per-node certificates
@@ -126,23 +132,29 @@ All certificates and keys are stored in the `certs/` directory. Required certifi
 - `front-proxy-client.crt`: For API aggregation
 
 ### Kubeconfig Files
+
 Generated kubeconfig files are in the `kubeconfig/` directory:
+
 - `admin.kubeconfig`: Cluster admin access
 - `{node}.kubeconfig`: Per-node kubelet auth
 - `kube-proxy.kubeconfig`, `kube-scheduler.kubeconfig`, `kube-controller-manager.kubeconfig`: Component auth
 
 ### OpenSSL Configuration
+
 Certificate generation uses `config/ca.conf` with sections defining:
+
 - Subject Alternative Names (SANs) for API server
 - Distinguished Names for each component
 - Key usage and extended key usage attributes
 
 ### Data Encryption at Rest
+
 Secrets and ConfigMaps are encrypted using the configuration in `encryption-config.yaml`, generated from `config/encryption-configuration.yaml` template with a random AES key.
 
 ## GitOps Workflow
 
 The cluster uses Flux CD for continuous deployment:
+
 - **Source Repository:** This repo (gawbul/gawbul-homelab) - infrastructure code
 - **GitOps Repository:** gawbul/gawbul-gitops - application manifests
 - **Flux Path:** clusters/eniac
@@ -153,9 +165,10 @@ Changes to the GitOps repo are automatically reconciled by Flux. This repo handl
 ## Software Versions
 
 Check `group_vars/all.yaml` for current versions:
+
 - Kubernetes: 1.34.1
-- containerd: 2.1.4
-- runc: 1.3.2
+- containerd: 2.2.0
+- runc: 1.3.3
 - CNI plugins: 1.8.0
 - etcd: 3.6.5
 - crictl: 1.34.0
@@ -165,6 +178,7 @@ The cluster runs on Ubuntu Noble (24.04) arm64.
 ## Troubleshooting
 
 ### Checking Component Status
+
 ```bash
 # On nodes (via SSH)
 systemctl status kubelet
@@ -178,16 +192,20 @@ kubectl describe node <node-name>
 ```
 
 ### Certificate Issues
+
 Certificates are valid for 10 years (3653 days). If regenerating, ensure all dependent kubeconfig files are also regenerated using `mise run kubeconfig-generate`.
 
 ### DNS Issues
+
 CoreDNS runs in kube-system namespace with ClusterIP 10.32.0.10. Verify with:
+
 ```bash
 kubectl get svc -n kube-system coredns
 kubectl logs -n kube-system -l k8s-app=kube-dns
 ```
 
 ### Storage Issues
+
 - Default storage: local-path-provisioner
 - Network storage: NFS CSI driver pointing to 192.168.50.2:/volume1/kubernetes
 - Check storage class: `kubectl get storageclass`
