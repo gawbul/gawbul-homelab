@@ -1,5 +1,5 @@
 [[tools.ansible]]
-version = "12.1.0"
+version = "12.2.0"
 backend = "pipx:ansible[uvx=false,pipx_args=--include-deps]"
 
 [[tools.container-structure-test]]
@@ -12,31 +12,31 @@ size = 16662482
 url = "https://github.com/GoogleContainerTools/container-structure-test/releases/download/v1.21.1/container-structure-test-darwin-arm64"
 
 [[tools.cosign]]
-version = "2.5.3"
+version = "3.0.2"
 backend = "aqua:sigstore/cosign"
 
 [tools.cosign.platforms.macos-arm64]
-checksum = "sha256:86e0cad94d0da4c0dab5e26672ede71447a08a0f0d8495b9381c117df27d7d09"
-size = 152385074
-url = "https://github.com/sigstore/cosign/releases/download/v2.5.3/cosign-darwin-arm64"
+checksum = "sha256:3823b044de184da21e300bc5e20dd29d3fa9243af3ba70c4a5da1712f3385d46"
+size = 155624370
+url = "https://github.com/sigstore/cosign/releases/download/v3.0.2/cosign-darwin-arm64"
 
 [[tools.flux2]]
-version = "2.7.2"
+version = "2.7.3"
 backend = "aqua:fluxcd/flux2"
 
 [tools.flux2.platforms.macos-arm64]
-checksum = "sha256:eaf3579994719900cf037ebc58085e1df0cebe4eeafecaf9e1dc30b89e776b71"
-size = 22899886
-url = "https://github.com/fluxcd/flux2/releases/download/v2.7.2/flux_2.7.2_darwin_arm64.tar.gz"
+checksum = "sha256:e96efce3e2ee0651ef516295c976112b4df4dd51410d5789cb665115fbfabde7"
+size = 22899610
+url = "https://github.com/fluxcd/flux2/releases/download/v2.7.3/flux_2.7.3_darwin_arm64.tar.gz"
 
 [[tools.go]]
-version = "1.25.2"
+version = "1.25.4"
 backend = "core:go"
 
 [tools.go.platforms.macos-arm64]
-checksum = "sha256:d1ade1b480e51b6269b6e65856c602aed047e1f0d32fffef7eebbd7faa8d7687"
-size = 58024236
-url = "https://dl.google.com/go/go1.25.2.darwin-arm64.tar.gz"
+checksum = "sha256:c1b04e74251fe1dfbc5382e73d0c6d96f49642d8aebb7ee10a7ecd4cae36ebd2"
+size = 58026727
+url = "https://dl.google.com/go/go1.25.4.darwin-arm64.tar.gz"
 
 [[tools.helm]]
 version = "3.19.0"
@@ -48,13 +48,13 @@ size = 17058141
 url = "https://get.helm.sh/helm-v3.19.0-darwin-arm64.tar.gz"
 
 [[tools.hk]]
-version = "1.18.3"
+version = "1.20.0"
 backend = "aqua:jdx/hk"
 
 [tools.hk.platforms.macos-arm64]
-checksum = "blake3:37d16bf65deaceef775eaf400ebe7c6f23b97eeaafb5b259867a706b6befae6c"
-size = 6201976
-url = "https://github.com/jdx/hk/releases/download/v1.18.3/hk-aarch64-apple-darwin.tar.gz"
+checksum = "sha256:dc7a4a44af30774162a3f13be16acf641ab85e537c685987b4ef99db273935eb"
+size = 6228868
+url = "https://github.com/jdx/hk/releases/download/v1.20.0/hk-aarch64-apple-darwin.tar.gz"
 
 [[tools.jq]]
 version = "1.8.1"
@@ -66,13 +66,13 @@ size = 841408
 url = "https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-macos-arm64"
 
 [[tools.k9s]]
-version = "0.50.15"
+version = "0.50.16"
 backend = "aqua:derailed/k9s"
 
 [tools.k9s.platforms.macos-arm64]
-checksum = "sha256:3f9c9b1c0208e2da5ae98e619771d3a7055baf8efdc7b95e072cac6767faabae"
-size = 38417868
-url = "https://github.com/derailed/k9s/releases/download/v0.50.15/k9s_Darwin_arm64.tar.gz"
+checksum = "sha256:83e3adcf479af1a816fc3907e751d4a7b2b0a6d2ea742d88e23356d8f0a45bc3"
+size = 38736004
+url = "https://github.com/derailed/k9s/releases/download/v0.50.16/k9s_Darwin_arm64.tar.gz"
 
 [[tools.kubectl]]
 version = "1.34.1"
@@ -88,13 +88,13 @@ version = "0.9.5"
 backend = "aqua:ahmetb/kubectx"
 
 [[tools.pkl]]
-version = "0.29.1"
+version = "0.30.0"
 backend = "aqua:apple/pkl"
 
 [tools.pkl.platforms.macos-arm64]
-checksum = "blake3:5160399295c75f15f6b2b1e2925945a5d42a66793aa4eec821ab2dc60a5ae4ea"
-size = 104874656
-url = "https://github.com/apple/pkl/releases/download/0.29.1/pkl-macos-aarch64"
+checksum = "sha256:923a636f2c858029d9bf93f35aeae58ebd9783fbe0209f4787c4eed950142212"
+size = 97035920
+url = "https://github.com/apple/pkl/releases/download/0.30.0/pkl-macos-aarch64"
 
 [[tools.python]]
 version = "3.14.0"
@@ -126,11 +126,11 @@ backend = "ubi:slsa-framework/slsa-verifier"
 checksum = "blake3:af93f77462964b7eeb93b9f45ccedeefc641305f6618d9ffc2480d89b0cceed6"
 
 [[tools.usage]]
-version = "2.3.2"
+version = "2.6.0"
 backend = "ubi:jdx/usage"
 
 [tools.usage.platforms.macos-arm64-usage]
-checksum = "blake3:2dcd87217718388d8af56addd65640d3c310a6bcf2c03471903e9bd751520f2c"
+checksum = "blake3:4784ce9570869607774cf551e9e6abf6089496867911a4d067bd79d82b3a79a1"
 
 [[tools.yq]]
 version = "4.48.1"
