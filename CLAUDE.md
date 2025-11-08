@@ -154,8 +154,8 @@ Changes to the GitOps repo are automatically reconciled by Flux. This repo handl
 
 Check `group_vars/all.yaml` for current versions:
 - Kubernetes: 1.34.1
-- containerd: 2.1.4
-- runc: 1.3.2
+- containerd: 2.2.0
+- runc: 1.3.3
 - CNI plugins: 1.8.0
 - etcd: 3.6.5
 - crictl: 1.34.0
