@@ -31,6 +31,9 @@ go.work.sum
 mise.local.toml
 mise.*.local.toml
 
+# ignore Claude Code local settings
+.claude/
+
 # ignore certificates
 certs/
 *.crt
