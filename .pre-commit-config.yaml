@@ -10,7 +10,7 @@ repos:
       - id: check-toml
       - id: check-xml
       - id: check-yaml
-        exclude: roles/k8s_control_planes/files/kube-apiserver-to-kubelet.yaml
+        args: [--allow-multiple-documents]
       - id: detect-private-key
       - id: end-of-file-fixer
       - id: no-commit-to-branch
