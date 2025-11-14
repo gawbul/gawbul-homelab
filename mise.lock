@@ -3,13 +3,13 @@ version = "12.2.0"
 backend = "pipx:ansible[uvx=false,pipx_args=--include-deps]"
 
 [[tools.container-structure-test]]
-version = "1.21.1"
+version = "1.22.0"
 backend = "aqua:GoogleContainerTools/container-structure-test"
 
 [tools.container-structure-test.platforms.macos-arm64]
-checksum = "sha256:5963a7d031990faefd1dc58aeb314be9edb6264494005a478e975dbf27841b04"
+checksum = "sha256:3843788756b283c2191fda642db993fd05849faf5c4e80fa38841ededf7efd78"
 size = 16662482
-url = "https://github.com/GoogleContainerTools/container-structure-test/releases/download/v1.21.1/container-structure-test-darwin-arm64"
+url = "https://github.com/GoogleContainerTools/container-structure-test/releases/download/v1.22.0/container-structure-test-darwin-arm64"
 
 [[tools.cosign]]
 version = "3.0.2"
@@ -39,13 +39,13 @@ size = 58026727
 url = "https://dl.google.com/go/go1.25.4.darwin-arm64.tar.gz"
 
 [[tools.helm]]
-version = "3.19.0"
+version = "4.0.0"
 backend = "aqua:helm/helm"
 
 [tools.helm.platforms.macos-arm64]
-checksum = "sha256:31513e1193da4eb4ae042eb5f98ef9aca7890cfa136f4707c8d4f70e2115bef6"
-size = 17058141
-url = "https://get.helm.sh/helm-v3.19.0-darwin-arm64.tar.gz"
+checksum = "sha256:4f5d367af9e2141b047710539d22b7e5872cdaef788333396077236feb422419"
+size = 18583217
+url = "https://get.helm.sh/helm-v4.0.0-darwin-arm64.tar.gz"
 
 [[tools.hk]]
 version = "1.20.0"
@@ -75,13 +75,13 @@ size = 38736004
 url = "https://github.com/derailed/k9s/releases/download/v0.50.16/k9s_Darwin_arm64.tar.gz"
 
 [[tools.kubectl]]
-version = "1.34.1"
+version = "1.34.2"
 backend = "aqua:kubernetes/kubectl"
 
 [tools.kubectl.platforms.macos-arm64]
-checksum = "sha256:d80e5fa36f2b14005e5bb35d3a72818acb1aea9a081af05340a000e5fbdb2f76"
-size = 59775314
-url = "https://dl.k8s.io/v1.34.1/bin/darwin/arm64/kubectl"
+checksum = "sha256:8f38d3a38ae317b00ebf90254dc274dd28d8c6eea4a4b30c5cb12d3d27017b6d"
+size = 59775266
+url = "https://dl.k8s.io/v1.34.2/bin/darwin/arm64/kubectl"
 
 [[tools.kubectx]]
 version = "0.9.5"
@@ -110,13 +110,13 @@ size = 7245972
 url = "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.darwin.aarch64.tar.xz"
 
 [[tools.skaffold]]
-version = "2.16.1"
+version = "2.17.0"
 backend = "aqua:GoogleContainerTools/skaffold"
 
 [tools.skaffold.platforms.macos-arm64]
-checksum = "blake3:2c67f3ca76d018ea381098008c620af3918f6657955057888ffe9e318fed26f4"
-size = 128449456
-url = "https://storage.googleapis.com/skaffold/releases/v2.16.1/skaffold-darwin-arm64"
+checksum = "blake3:a93c9c47f06188e41efa7b97d66f6807deb3bfaebd9283099689dc656c3e92a7"
+size = 128995840
+url = "https://storage.googleapis.com/skaffold/releases/v2.17.0/skaffold-darwin-arm64"
 
 [[tools.slsa-verifier]]
 version = "2.7.1"
@@ -126,11 +126,11 @@ backend = "ubi:slsa-framework/slsa-verifier"
 checksum = "blake3:af93f77462964b7eeb93b9f45ccedeefc641305f6618d9ffc2480d89b0cceed6"
 
 [[tools.usage]]
-version = "2.6.0"
+version = "2.8.0"
 backend = "ubi:jdx/usage"
 
 [tools.usage.platforms.macos-arm64-usage]
-checksum = "blake3:4784ce9570869607774cf551e9e6abf6089496867911a4d067bd79d82b3a79a1"
+checksum = "blake3:b58c11a3a3a17de627b3e754a293839f3a03cc028acd68bf916351a3ea613e4f"
 
 [[tools.yq]]
 version = "4.48.1"
