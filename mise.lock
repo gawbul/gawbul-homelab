@@ -1,142 +1,90 @@
 [[tools.ansible]]
-version = "12.2.0"
+version = "13.2.0"
 backend = "pipx:ansible[uvx=false,pipx_args=--include-deps]"
 
-[[tools.container-structure-test]]
-version = "1.22.0"
-backend = "aqua:GoogleContainerTools/container-structure-test"
+[tools.ansible.options]
+pipx_args = "--include-deps"
+uvx = "false"
 
-[tools.container-structure-test.platforms.macos-arm64]
-checksum = "sha256:3843788756b283c2191fda642db993fd05849faf5c4e80fa38841ededf7efd78"
-size = 16662482
-url = "https://github.com/GoogleContainerTools/container-structure-test/releases/download/v1.22.0/container-structure-test-darwin-arm64"
+[[tools.container-structure-test]]
+version = "1.22.1"
+backend = "aqua:GoogleContainerTools/container-structure-test"
+"platforms.macos-arm64" = { checksum = "sha256:ba00172029ecec3afda7fd93a5eee7cdaef710196df7103689da3386eba56b0a", url = "https://github.com/GoogleContainerTools/container-structure-test/releases/download/v1.22.1/container-structure-test-darwin-arm64"}
 
 [[tools.cosign]]
-version = "3.0.2"
+version = "3.0.3"
 backend = "aqua:sigstore/cosign"
-
-[tools.cosign.platforms.macos-arm64]
-checksum = "sha256:3823b044de184da21e300bc5e20dd29d3fa9243af3ba70c4a5da1712f3385d46"
-size = 155624370
-url = "https://github.com/sigstore/cosign/releases/download/v3.0.2/cosign-darwin-arm64"
+"platforms.macos-arm64" = { checksum = "sha256:38349e45a8bb0d1ed3a7affb8bdd2e9d597cee08b6800c395a926b4d9adb84d2", url = "https://github.com/sigstore/cosign/releases/download/v3.0.3/cosign-darwin-arm64"}
 
 [[tools.flux2]]
-version = "2.7.3"
+version = "2.7.5"
 backend = "aqua:fluxcd/flux2"
-
-[tools.flux2.platforms.macos-arm64]
-checksum = "sha256:e96efce3e2ee0651ef516295c976112b4df4dd51410d5789cb665115fbfabde7"
-size = 22899610
-url = "https://github.com/fluxcd/flux2/releases/download/v2.7.3/flux_2.7.3_darwin_arm64.tar.gz"
+"platforms.macos-arm64" = { checksum = "sha256:79faae964badc0b08f61ef6228f636bea99c6750537634855fa8b84f75b006d8", url = "https://github.com/fluxcd/flux2/releases/download/v2.7.5/flux_2.7.5_darwin_arm64.tar.gz"}
 
 [[tools.go]]
-version = "1.25.4"
+version = "1.25.5"
 backend = "core:go"
-
-[tools.go.platforms.macos-arm64]
-checksum = "sha256:c1b04e74251fe1dfbc5382e73d0c6d96f49642d8aebb7ee10a7ecd4cae36ebd2"
-size = 58026727
-url = "https://dl.google.com/go/go1.25.4.darwin-arm64.tar.gz"
+"platforms.macos-arm64" = { checksum = "sha256:bed8ebe824e3d3b27e8471d1307f803fc6ab8e1d0eb7a4ae196979bd9b801dd3", url = "https://dl.google.com/go/go1.25.5.darwin-arm64.tar.gz"}
 
 [[tools.helm]]
-version = "4.0.0"
+version = "4.0.4"
 backend = "aqua:helm/helm"
-
-[tools.helm.platforms.macos-arm64]
-checksum = "sha256:4f5d367af9e2141b047710539d22b7e5872cdaef788333396077236feb422419"
-size = 18583217
-url = "https://get.helm.sh/helm-v4.0.0-darwin-arm64.tar.gz"
+"platforms.macos-arm64" = { checksum = "sha256:a7ea99937a9679b3935fa0a2b70e577aa1ea84e5856e7c0821ca6ffa064ea976", url = "https://get.helm.sh/helm-v4.0.4-darwin-arm64.tar.gz"}
 
 [[tools.hk]]
-version = "1.20.0"
+version = "1.28.0"
 backend = "aqua:jdx/hk"
-
-[tools.hk.platforms.macos-arm64]
-checksum = "sha256:dc7a4a44af30774162a3f13be16acf641ab85e537c685987b4ef99db273935eb"
-size = 6228868
-url = "https://github.com/jdx/hk/releases/download/v1.20.0/hk-aarch64-apple-darwin.tar.gz"
+"platforms.macos-arm64" = { checksum = "sha256:7b0ad12e5b6efa4ca55feec2e90ef5eb166f50293d109805d4938f708713e784", url = "https://github.com/jdx/hk/releases/download/v1.28.0/hk-aarch64-apple-darwin.tar.gz"}
 
 [[tools.jq]]
 version = "1.8.1"
 backend = "aqua:jqlang/jq"
-
-[tools.jq.platforms.macos-arm64]
-checksum = "sha256:a9fe3ea2f86dfc72f6728417521ec9067b343277152b114f4e98d8cb0e263603"
-size = 841408
-url = "https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-macos-arm64"
+"platforms.macos-arm64" = { checksum = "sha256:a9fe3ea2f86dfc72f6728417521ec9067b343277152b114f4e98d8cb0e263603", url = "https://github.com/jqlang/jq/releases/download/jq-1.8.1/jq-macos-arm64"}
 
 [[tools.k9s]]
 version = "0.50.16"
 backend = "aqua:derailed/k9s"
-
-[tools.k9s.platforms.macos-arm64]
-checksum = "sha256:83e3adcf479af1a816fc3907e751d4a7b2b0a6d2ea742d88e23356d8f0a45bc3"
-size = 38736004
-url = "https://github.com/derailed/k9s/releases/download/v0.50.16/k9s_Darwin_arm64.tar.gz"
+"platforms.macos-arm64" = { checksum = "sha256:83e3adcf479af1a816fc3907e751d4a7b2b0a6d2ea742d88e23356d8f0a45bc3", url = "https://github.com/derailed/k9s/releases/download/v0.50.16/k9s_Darwin_arm64.tar.gz"}
 
 [[tools.kubectl]]
-version = "1.34.2"
+version = "1.35.0"
 backend = "aqua:kubernetes/kubectl"
-
-[tools.kubectl.platforms.macos-arm64]
-checksum = "sha256:8f38d3a38ae317b00ebf90254dc274dd28d8c6eea4a4b30c5cb12d3d27017b6d"
-size = 59775266
-url = "https://dl.k8s.io/v1.34.2/bin/darwin/arm64/kubectl"
+"platforms.macos-arm64" = { checksum = "sha256:cf699c56340dc775230fde4ef84237d27563ea6ef52164c7d078072b586c3918", url = "https://dl.k8s.io/v1.35.0/bin/darwin/arm64/kubectl"}
 
 [[tools.kubectx]]
 version = "0.9.5"
 backend = "aqua:ahmetb/kubectx"
 
 [[tools.pkl]]
-version = "0.30.0"
+version = "0.30.2"
 backend = "aqua:apple/pkl"
-
-[tools.pkl.platforms.macos-arm64]
-checksum = "sha256:923a636f2c858029d9bf93f35aeae58ebd9783fbe0209f4787c4eed950142212"
-size = 97035920
-url = "https://github.com/apple/pkl/releases/download/0.30.0/pkl-macos-aarch64"
+"platforms.macos-arm64" = { checksum = "sha256:f1db44c0f6f859aee88c9d7d272f2371ae40ac95ec9957ae78eff51665158e04", url = "https://github.com/apple/pkl/releases/download/0.30.2/pkl-macos-aarch64"}
 
 [[tools.python]]
-version = "3.14.0"
+version = "3.14.2"
 backend = "core:python"
 
 [[tools.shellcheck]]
 version = "0.11.0"
 backend = "aqua:koalaman/shellcheck"
-
-[tools.shellcheck.platforms.macos-arm64]
-checksum = "blake3:ad4957ed937da4e876d19e3500fc31d104e43b6e4e11d57a7b7c40140bc870d6"
-size = 7245972
-url = "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.darwin.aarch64.tar.xz"
+"platforms.macos-arm64" = { checksum = "blake3:ad4957ed937da4e876d19e3500fc31d104e43b6e4e11d57a7b7c40140bc870d6", url = "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.darwin.aarch64.tar.xz"}
 
 [[tools.skaffold]]
 version = "2.17.0"
 backend = "aqua:GoogleContainerTools/skaffold"
-
-[tools.skaffold.platforms.macos-arm64]
-checksum = "blake3:a93c9c47f06188e41efa7b97d66f6807deb3bfaebd9283099689dc656c3e92a7"
-size = 128995840
-url = "https://storage.googleapis.com/skaffold/releases/v2.17.0/skaffold-darwin-arm64"
+"platforms.macos-arm64" = { checksum = "blake3:a93c9c47f06188e41efa7b97d66f6807deb3bfaebd9283099689dc656c3e92a7", url = "https://storage.googleapis.com/skaffold/releases/v2.17.0/skaffold-darwin-arm64"}
 
 [[tools.slsa-verifier]]
 version = "2.7.1"
 backend = "ubi:slsa-framework/slsa-verifier"
-
-[tools.slsa-verifier.platforms.macos-arm64-slsa-verifier]
-checksum = "blake3:af93f77462964b7eeb93b9f45ccedeefc641305f6618d9ffc2480d89b0cceed6"
+"platforms.macos-arm64-slsa-verifier" = { checksum = "blake3:af93f77462964b7eeb93b9f45ccedeefc641305f6618d9ffc2480d89b0cceed6"}
 
 [[tools.usage]]
-version = "2.8.0"
+version = "2.11.0"
 backend = "ubi:jdx/usage"
-
-[tools.usage.platforms.macos-arm64-usage]
-checksum = "blake3:b58c11a3a3a17de627b3e754a293839f3a03cc028acd68bf916351a3ea613e4f"
+"platforms.macos-arm64-usage" = { checksum = "blake3:dfe7dd05f349c914a3cbe0e70db6e01ba4105b9d5f39d0095f7c1e956ad2d8e5"}
 
 [[tools.yq]]
-version = "4.48.1"
+version = "4.50.1"
 backend = "aqua:mikefarah/yq"
-
-[tools.yq.platforms.macos-arm64]
-checksum = "blake3:6e0fcb5770ee814265c2d0be03f4328eb443e1b9f07b9ee7be273cd7e59b7fc5"
-size = 10980802
-url = "https://github.com/mikefarah/yq/releases/download/v4.48.1/yq_darwin_arm64"
+"platforms.macos-arm64" = { checksum = "sha256:589cd3e27b2a0ae62fc4513c7d18db56203aaf88bf7c480f0cb3d4f4d0ac5514", url = "https://github.com/mikefarah/yq/releases/download/v4.50.1/yq_darwin_arm64"}
