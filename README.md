@@ -59,7 +59,17 @@ The entire cluster can be provisioned with a few commands.
     mise run ansible-playbook-run
     ```
 
-3.  **Access the Cluster:**
+3.  **Configure Secret Management (SOPS):**
+    Flux needs the Age private key to decrypt secrets in the GitOps repo.
+    ```bash
+    # Generate keys (if you haven't already, ensure you backup ~/.config/sops/age/keys.txt)
+    mise run age-generate-keys
+
+    # Create the secret in the cluster
+    mise run sops-secret-create
+    ```
+
+4.  **Access the Cluster:**
     Fetch the admin `kubeconfig` to your local machine.
     ```bash
     mise run kubeconfig-get
