@@ -64,11 +64,11 @@ ansible-playbook --inventory hosts k3s_migration.yaml
 [tasks.etc-hosts-set]
 description = "Set the hostnames in /etc/hosts"
 run = """
-sudo sed -E -i '' '/^.*[a-z.-]+kubernetes.local$/d' /etc/hosts
+sudo sed -E -i '' '/^.*[a-z.-]+kubernetes.local.*$/d' /etc/hosts
 read -r -a NODE_IPS <<< "${HOMELAB_IPS}"
 read -r -a NODE_NAMES <<< "${HOMELAB_NODES}"
 for i in {0..3}; do
-  echo "${NODE_IPS[$i]}\t${NODE_NAMES[$i]}.kubernetes.local" | sudo tee -a /etc/hosts
+  echo "${NODE_IPS[$i]}\t${NODE_NAMES[$i]}.kubernetes.local\t${NODE_NAMES[$i]}" | sudo tee -a /etc/hosts
 done
 """
 
