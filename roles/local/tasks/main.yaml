@@ -4,11 +4,10 @@
 - name: Set the local kube config
   ansible.builtin.command: mise run kubeconfig-get
 
-- name: Apply node labels to worker nodes
+- name: Apply worker node labels to all nodes
   ansible.builtin.shell: |
-    kubectl label node eniac-node2 node-role.kubernetes.io/worker=worker --overwrite
-    kubectl label node eniac-node3 node-role.kubernetes.io/worker=worker --overwrite
-    kubectl label node eniac-node4 node-role.kubernetes.io/worker=worker --overwrite
+    kubectl label node {{ item.key }} node-role.kubernetes.io/worker=worker --overwrite
+  loop: "{{ nodes | dict2items }}"
 
 - name: Install Flux
   ansible.builtin.shell: |
