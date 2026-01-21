@@ -20,6 +20,7 @@ write-kubeconfig-mode: "0644"
 tls-san:
   - {{ hostvars[inventory_hostname]['ansible_host'] | default(inventory_hostname) }}
   - {{ inventory_hostname }}.kubernetes.local
+flannel-backend: wireguard-native  # Best practice for secure inter-node traffic
 
 {% else %}
 # Worker Node Settings
@@ -29,7 +30,6 @@ server: {{ k3s_server_url }}
 # Common Settings
 token-file: {{ k3s_token_file }}
 node-name: {{ inventory_hostname }}
-flannel-backend: wireguard-native  # Best practice for secure inter-node traffic
 {% if inventory_hostname in groups['k8s_worker_nodes'] %}
 kubelet-arg:
   - "container-log-max-files=5"
