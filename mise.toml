@@ -46,7 +46,13 @@ done
 [tasks.ansible-playbook-run]
 description = "Run the Ansible playbooks using the hosts file"
 run = """
-ansible-playbook --inventory hosts site.yaml --extra-vars "@flux_github_token.yaml"
+ansible-playbook --inventory hosts site.yaml --extra-vars \"@flux_github_token.yaml\"
+"""
+
+[tasks.k3s-migration-run]
+description = "Run the K3s migration playbook"
+run = """
+ansible-playbook --inventory hosts k3s_migration.yaml
 """
 
 [tasks.etc-hosts-set]
