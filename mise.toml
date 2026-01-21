@@ -21,9 +21,6 @@ yq = "latest"
 [env]
 HOMELAB_NODES = "eniac-node1 eniac-node2 eniac-node3 eniac-node4"
 HOMELAB_IPS = "192.168.50.4 192.168.50.5 192.168.50.6 192.168.50.7"
-K8S_CLUSTER_NAME = "eniac"
-K8S_CONTROL_PLANE_NODE = "eniac-node1"
-K8S_WORKER_NODES = "eniac-node1 eniac-node2 eniac-node3 eniac-node4"
 
 [tasks.prelint]
 description = "Run prelint commands"
