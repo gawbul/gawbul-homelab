@@ -46,7 +46,13 @@ done
 [tasks.ansible-playbook-run]
 description = "Run the Ansible playbooks using the hosts file"
 run = """
-ansible-playbook --inventory hosts site.yaml --extra-vars \"@flux_github_token.yaml\"
+ansible-playbook --inventory hosts site.yaml --extra-vars "@flux_github_token.yaml"
+"""
+
+[tasks.local-playbook-run]
+description = "Run the local Ansible playbook in isolation"
+run = """
+ansible-playbook --inventory hosts site.yaml --limit local --extra-vars "@flux_github_token.yaml"
 """
 
 [tasks.k3s-migration-run]
