@@ -6,7 +6,7 @@ This project automates the provisioning of a **K3s** cluster using **Ansible** a
 
 ## Architecture
 
-*   **Hardware:** 4x Raspberry Pi 5 (16GB RAM, 64GB+ A2 MicroSD)
+*   **Hardware:** 4x Raspberry Pi 5 (16GB RAM, 512GB A2 MicroSD)
 *   **OS:** Ubuntu 24.04 LTS (Noble Numbat)
 *   **Kubernetes Distro:** [K3s](https://k3s.io/) (Lightweight, ARM64 optimized)
 *   **Network:**
