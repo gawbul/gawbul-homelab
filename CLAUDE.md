@@ -4,14 +4,14 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Overview
 
-This is a Kubernetes homelab setup running on Raspberry Pi 5 cluster (4 nodes named eniac-node1 through eniac-node4). The infrastructure is provisioned using **K3s** and Ansible, moving away from the manual "Kubernetes The Hard Way" approach for better maintainability and performance.
+This is a Kubernetes homelab setup running on Raspberry Pi 5 cluster (4 nodes named eniac-node1 through eniac-node4). The infrastructure is provisioned using **K3s** and Ansible, featuring a GitOps-driven architecture via Flux CD.
 
 ## Cluster Architecture
 
 **Cluster Name:** eniac
 **Control Plane:** eniac-node1
 **Worker Nodes:** eniac-node1, eniac-node2, eniac-node3, eniac-node4
-**Network:** 192.168.50.4-7 (static IPs), Pod CIDR: 10.200.0.0/16
+**Network:** 192.168.50.4-7 (static IPs), Pod CIDR: 10.42.0.0/16, Service CIDR: 10.43.0.0/16 (K3s defaults)
 **Domain:** kubernetes.local
 
 The cluster uses:
@@ -42,8 +42,14 @@ mise run etc-hosts-set
 ### Deploy & Manage Cluster
 
 ```bash
-# Run Ansible playbook to deploy/update the cluster
+# Run the full Ansible playbook to deploy/update the cluster
 mise run ansible-playbook-run
+
+# Run only the K3s installation role
+mise run k3s-playbook-run
+
+# Run only the local bootstrapping (Flux install)
+mise run local-playbook-run
 
 # Fetch the kubeconfig from the control plane
 mise run kubeconfig-get
@@ -72,11 +78,11 @@ The main playbook is `site.yaml`, which applies roles in this order:
 
 1. **common** → All nodes (basic system setup, hostnames, cgroups).
 2. **k3s** → All nodes (K3s server/agent installation and configuration).
-3. **local** → Localhost (Flux bootstrapping, cluster specific one-time setups).
+3. **local** → Localhost (Flux bootstrapping).
 
 **Variables:**
 
-- `group_vars/all.yaml`: Cluster-wide settings (node definitions, network config).
+- `group_vars/all.yaml`: Cluster-wide settings (node definitions).
 - `roles/k3s/defaults/main.yaml`: K3s specific versions and disabled components.
 
 ## Troubleshooting

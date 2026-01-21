@@ -15,7 +15,7 @@ The project follows "Best Practice" patterns for bare-metal Kubernetes, includin
     *   `eniac-node2` - `eniac-node4`: Worker Nodes
 *   **Networking**:
     *   Node Network: `192.168.50.0/24` (Static IPs `.4` - `.7`)
-    *   Pod CIDR: `10.200.0.0/16`
+    *   Pod/Service CIDR: K3s Defaults (`10.42.0.0/16`, `10.43.0.0/16`)
     *   Inter-node encryption: **Wireguard (native)** via Flannel.
 *   **Key Components**:
     *   **Cilium**: High-performance eBPF CNI.
@@ -33,14 +33,18 @@ This project uses [mise](https://mise.jdx.dev/) for tool management and task run
 ## Workflows & Commands
 
 ### 1. Cluster Deployment
-The cluster state is applied via a single Ansible command:
+The cluster state is applied via Ansible commands:
 
 ```bash
 # Set local /etc/hosts for resolution
 mise run etc-hosts-set
 
-# Apply the site.yaml playbook to all nodes
+# Apply the full site.yaml playbook to all nodes
 mise run ansible-playbook-run
+
+# Run specific roles in isolation
+mise run k3s-playbook-run
+mise run local-playbook-run
 
 # Get the cluster credentials
 mise run kubeconfig-get
@@ -49,20 +53,21 @@ mise run kubeconfig-get
 **Playbook Order (`site.yaml`):**
 1.  `common`: Basic system setup (all nodes).
 2.  `k3s`: K3s installation and configuration (all nodes).
-3.  `local`: Local machine bootstrapping.
+3.  `local`: Local machine bootstrapping (Flux install).
 
 ### 2. GitOps (Flux)
 Components like Cilium, MetalLB, and the NFS Provisioner are defined in the external `gawbul-gitops` repository and reconciled by Flux.
 
 ## Directory Structure
 
-*   `roles/k3s/`: The primary automation role for the cluster.
+*   `roles/k3s/`: The primary automation role for K3s installation.
 *   `roles/common/`: Shared system configuration (hostnames, kernel parameters).
-*   `group_vars/all.yaml`: Centralized node and network definitions.
+*   `roles/local/`: Local machine setup and Flux bootstrapping.
+*   `group_vars/all.yaml`: Centralized node definitions.
 *   `kubeconfig/k3s.yaml`: Local access credentials (git-ignored).
 
 ## Conventions & Standards
 
 *   **Idempotency**: Ansible roles must be safe to run multiple times.
 *   **Externalized Manifests**: All K8s resources (apps and infra) belong in the GitOps repo, not this IaC repo.
-*   **Security**: Sensitive data is managed via SOPS or Ansible Vault.
+*   **Security**: Sensitive data is managed via Ansible Vault (`flux_github_token.yaml`).
