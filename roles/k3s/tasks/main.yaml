@@ -70,3 +70,26 @@
     state: started
     enabled: true
     daemon_reload: true
+
+- name: Wait for Kubeconfig to be generated
+  become: true
+  ansible.builtin.wait_for:
+    path: /etc/rancher/k3s/k3s.yaml
+  when: inventory_hostname == k3s_control_plane_node
+
+- name: Fetch K3s kubeconfig to local machine
+  become: true
+  ansible.builtin.fetch:
+    src: /etc/rancher/k3s/k3s.yaml
+    dest: kubeconfig/k3s.yaml
+    flat: yes
+  when: inventory_hostname == k3s_control_plane_node
+
+- name: Update K3s kubeconfig server URL
+  delegate_to: localhost
+  become: false
+  ansible.builtin.replace:
+    path: kubeconfig/k3s.yaml
+    regexp: 'https://127.0.0.1:6443'
+    replace: "https://{{ hostvars[k3s_control_plane_node]['ansible_host'] | default(k3s_control_plane_node) }}:6443"
+  when: inventory_hostname == k3s_control_plane_node
