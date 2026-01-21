@@ -9,7 +9,7 @@ The project follows "Best Practice" patterns for bare-metal Kubernetes, includin
 ## Architecture
 
 *   **Cluster Name**: `eniac`
-*   **Hardware**: 4x Raspberry Pi 5 (16GB)
+*   **Hardware**: 4x Raspberry Pi 5 (16GB RAM, 512GB microSD)
 *   **Nodes**:
     *   `eniac-node1`: Control Plane + Worker
     *   `eniac-node2` - `eniac-node4`: Worker Nodes
