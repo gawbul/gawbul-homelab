@@ -3,7 +3,8 @@
 
 - name: Set the hostname on the machine
   become: true
-  ansible.builtin.shell: "hostnamectl hostname {{ item.value.name }}"
+  ansible.builtin.hostname:
+    name: "{{ item.value.name }}"
   with_dict: "{{ nodes[inventory_hostname] }}"
 
 - name: Ensure /etc/hosts is populated correctly

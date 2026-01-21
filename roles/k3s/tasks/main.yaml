@@ -91,5 +91,5 @@
   ansible.builtin.replace:
     path: kubeconfig/k3s.yaml
     regexp: 'https://127.0.0.1:6443'
-    replace: "https://{{ hostvars[k3s_control_plane_node]['ansible_host'] | default(k3s_control_plane_node) }}:6443"
+    replace: "https://{{ nodes[k3s_control_plane_node].node_info.ip_address }}:6443"
   when: inventory_hostname == k3s_control_plane_node
