@@ -2,50 +2,12 @@
 # This playbook contains plays that will be run locally.
 
 - name: Set the local kube config
-  ansible.builtin.command: mise run kubeconfig-local-generate
+  ansible.builtin.command: mise run kubeconfig-get
 
-- name: Apply node labels
+- name: Apply worker node labels to all nodes
   ansible.builtin.shell: |
-    kubectl label node eniac-node1 node-role.kubernetes.io/control-plane=control-plane
-    kubectl label node eniac-node2 node-role.kubernetes.io/worker=worker
-    kubectl label node eniac-node3 node-role.kubernetes.io/worker=worker
-    kubectl label node eniac-node4 node-role.kubernetes.io/worker=worker
-
-- name: Taint control plane to allow scheduling only certain jobs
-  ansible.builtin.shell: |
-    kubectl taint nodes eniac-node1 node-role.kubernetes.io/control-plane:NoSchedule --overwrite
-
-- name: Install CoreDNS
-  ansible.builtin.shell: |
-    helm repo add coredns https://coredns.github.io/helm --force-update
-    helm upgrade --install coredns coredns/coredns --namespace=kube-system --set service.clusterIP="10.32.0.10"
-    kubectl wait deployments/coredns --namespace=kube-system --for=condition=Available --timeout=300s
-
-- name: Install the local-path-provisioner
-  ansible.builtin.shell: |
-    kubectl apply -f https://raw.githubusercontent.com/rancher/local-path-provisioner/v{{ local_path_version }}/deploy/local-path-storage.yaml
-    kubectl wait deployments/local-path-provisioner --namespace=local-path-storage --for=condition=Available --timeout=300s
-    kubectl patch storageclass local-path -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
-
-- name: Install the NFS CSI driver
-  ansible.builtin.shell: |
-    helm repo add csi-driver-nfs https://raw.githubusercontent.com/kubernetes-csi/csi-driver-nfs/master/charts --force-update
-    helm upgrade --install csi-driver-nfs csi-driver-nfs/csi-driver-nfs --namespace kube-system --version v{{ nfs_csi_driver_version }}
-    kubectl wait deployments/csi-nfs-controller --namespace=kube-system --for=condition=Available --timeout=300s
-
-- name: Move StorageClass file into place
-  ansible.builtin.template:
-    src: storage-class.yaml.j2
-    dest: /tmp/storage-class.yaml
-
-- name: Install the StorageClass
-  ansible.builtin.command: kubectl apply -f /tmp/storage-class.yaml
-
-- name: Install Metrics Server
-  ansible.builtin.shell: |
-    helm repo add metrics-server https://kubernetes-sigs.github.io/metrics-server/ --force-update
-    helm upgrade --install metrics-server metrics-server/metrics-server --namespace kube-system
-    kubectl wait deployments/metrics-server --namespace=kube-system --for=condition=Available --timeout=300s
+    kubectl label node {{ item.key }} node-role.kubernetes.io/worker=worker --overwrite
+  loop: "{{ nodes | dict2items }}"
 
 - name: Install Flux
   ansible.builtin.shell: |

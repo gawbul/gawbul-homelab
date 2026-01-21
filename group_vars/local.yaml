@@ -1,14 +1,7 @@
 ---
 # This variables file is used by the playbooks in the local group.
 
-configuration_repository: "git@github.com:gawbul/gawbul-homelab.git"
-
-local_path_version: 0.0.32
-nfs_csi_driver_version: 4.12.1
-
-nfs_server_ip: 192.168.50.2
-nfs_server_share: /volume1/kubernetes
-
+# Flux Bootstrap Configuration
 github_token: "{{ flux_github_token }}"
 github_username: gawbul
 gitops_repository: gawbul-gitops

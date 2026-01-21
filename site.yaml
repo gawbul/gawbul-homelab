@@ -4,29 +4,20 @@
 - name: Apply the common configuration to all nodes
   hosts: all, !local
   remote_user: gawbul
+  tags: common
   roles:
     - common
 
-- name: Apply the configuration to all K8s nodes
+- name: Setup K3s on all nodes
   hosts: [k8s_control_planes, k8s_worker_nodes]
   remote_user: gawbul
+  tags: k3s
   roles:
-    - k8s_all_nodes
-
-- name: Configure and deploy the Kubernetes Control Plane Node
-  hosts: k8s_control_planes
-  remote_user: gawbul
-  roles:
-    - k8s_control_planes
-
-- name: Configure and deploy the Kubernetes Worker Nodes
-  hosts: k8s_worker_nodes
-  remote_user: gawbul
-  roles:
-    - k8s_worker_nodes
+    - k3s
 
 - name: Bootstrap the cluster with the relevant configuration
   hosts: local
   remote_user: gawbul
+  tags: local
   roles:
     - local
