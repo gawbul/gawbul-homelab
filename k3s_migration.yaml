@@ -1,5 +1,11 @@
 ---
-# This playbook migrates the cluster to K3s
+# This playbook migrates the cluster to K3s starting from fresh OS
+
+- name: Apply the common configuration to all nodes
+  hosts: all, !local
+  remote_user: gawbul
+  roles:
+    - common
 
 - name: Setup K3s on all nodes
   hosts: [k8s_control_planes, k8s_worker_nodes]
