@@ -1,0 +1,8 @@
+---
+# This playbook migrates the cluster to K3s
+
+- name: Setup K3s on all nodes
+  hosts: [k8s_control_planes, k8s_worker_nodes]
+  remote_user: "{{ k3s_user | default('gawbul') }}"
+  roles:
+    - k3s

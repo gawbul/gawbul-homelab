@@ -1,0 +1,72 @@
+---
+- name: Create K3s configuration directory
+  become: true
+  ansible.builtin.file:
+    path: "{{ k3s_config_dir }}"
+    state: directory
+    mode: "0755"
+
+- name: Generate K3s cluster token on the first control plane
+  become: true
+  ansible.builtin.shell: "openssl rand -base64 32 > {{ k3s_token_file }}"
+  args:
+    creates: "{{ k3s_token_file }}"
+  when: inventory_hostname == k3s_control_plane_node
+
+- name: Read K3s cluster token
+  become: true
+  ansible.builtin.slurp:
+    src: "{{ k3s_token_file }}"
+  register: k3s_token_slurp
+  when: inventory_hostname == k3s_control_plane_node
+
+- name: Distribute K3s cluster token to all nodes
+  become: true
+  ansible.builtin.copy:
+    content: "{{ hostvars[k3s_control_plane_node]['k3s_token_slurp']['content'] | b64decode }}"
+    dest: "{{ k3s_token_file }}"
+    mode: "0600"
+  when: inventory_hostname != k3s_control_plane_node
+
+- name: Download K3s binary
+  become: true
+  ansible.builtin.get_url:
+    url: "https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s-arm64"
+    dest: "{{ k3s_install_dir }}/k3s"
+    mode: "0755"
+  register: k3s_binary
+
+- name: Create symlinks for k3s tools
+  become: true
+  ansible.builtin.file:
+    src: "{{ k3s_install_dir }}/k3s"
+    dest: "{{ k3s_install_dir }}/{{ item }}"
+    state: link
+  loop:
+    - kubectl
+    - crictl
+    - ctr
+
+- name: Deploy K3s configuration
+  become: true
+  ansible.builtin.template:
+    src: config.yaml.j2
+    dest: "{{ k3s_config_dir }}/config.yaml"
+    mode: "0644"
+  notify: Restart K3s
+
+- name: Create K3s systemd service file
+  become: true
+  ansible.builtin.template:
+    src: k3s.service.j2
+    dest: /etc/systemd/system/k3s.service
+    mode: "0644"
+  notify: Restart K3s
+
+- name: Enable and start K3s service
+  become: true
+  ansible.builtin.systemd:
+    name: k3s
+    state: started
+    enabled: true
+    daemon_reload: true

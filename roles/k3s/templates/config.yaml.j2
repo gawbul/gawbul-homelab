@@ -1,0 +1,37 @@
+# K3s Configuration
+# Documentation: https://docs.k3s.io/installation/configuration
+
+{% if inventory_hostname in groups['k8s_control_planes'] %}
+# Control Plane Settings
+{% if inventory_hostname == k3s_control_plane_node %}
+cluster-init: true
+{% else %}
+server: {{ k3s_server_url }}
+{% endif %}
+
+# Disable default components to use MetalLB and explicit Traefik/Ingress-Nginx
+disable:
+{% for component in k3s_disable_components %}
+  - {{ component }}
+{% endfor %}
+
+# Networking
+write-kubeconfig-mode: "0644"
+tls-san:
+  - {{ hostvars[inventory_hostname]['ansible_host'] | default(inventory_hostname) }}
+  - {{ inventory_hostname }}.kubernetes.local
+
+{% else %}
+# Worker Node Settings
+server: {{ k3s_server_url }}
+{% endif %}
+
+# Common Settings
+token-file: {{ k3s_token_file }}
+node-name: {{ inventory_hostname }}
+flannel-backend: wireguard-native  # Best practice for secure inter-node traffic
+{% if inventory_hostname in groups['k8s_worker_nodes'] %}
+kubelet-arg:
+  - "container-log-max-files=5"
+  - "container-log-max-size=10Mi"
+{% endif %}

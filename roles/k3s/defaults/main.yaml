@@ -1,0 +1,20 @@
+---
+# K3s Version: Using the latest stable release as of Jan 2026
+k3s_version: v1.35.0+k3s1
+k3s_install_dir: /usr/local/bin
+k3s_config_dir: /etc/rancher/k3s
+k3s_token_file: "{{ k3s_config_dir }}/cluster-token"
+
+# Components to disable:
+# - traefik: We will install this explicitly via Flux for better control.
+# - servicelb: We are replacing this with MetalLB for "real" LoadBalancer IPs.
+k3s_disable_components:
+  - traefik
+  - servicelb
+
+# Control Plane Definition
+k3s_control_plane_node: "{{ groups['k8s_control_planes'][0] }}"
+k3s_server_url: "https://{{ hostvars[k3s_control_plane_node]['ansible_host'] | default(hostvars[k3s_control_plane_node]['inventory_hostname']) }}:6443"
+
+# System User
+k3s_user: "gawbul"
