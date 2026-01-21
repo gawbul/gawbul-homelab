@@ -50,7 +50,13 @@ ansible-playbook --inventory hosts site.yaml --extra-vars "@flux_github_token.ya
 [tasks.local-playbook-run]
 description = "Run the local Ansible playbook in isolation"
 run = """
-ansible-playbook --inventory hosts site.yaml --limit local --extra-vars "@flux_github_token.yaml"
+ansible-playbook --inventory hosts site.yaml --tags local --extra-vars "@flux_github_token.yaml"
+"""
+
+[tasks.k3s-playbook-run]
+description = "Run the K3s Ansible playbook in isolation"
+run = """
+ansible-playbook --inventory hosts site.yaml --tags k3s
 """
 
 [tasks.etc-hosts-set]
