@@ -4,16 +4,11 @@
 - name: Set the local kube config
   ansible.builtin.command: mise run kubeconfig-get
 
-- name: Apply node labels
+- name: Apply node labels to worker nodes
   ansible.builtin.shell: |
-    kubectl label node eniac-node1 node-role.kubernetes.io/control-plane=control-plane --overwrite
     kubectl label node eniac-node2 node-role.kubernetes.io/worker=worker --overwrite
     kubectl label node eniac-node3 node-role.kubernetes.io/worker=worker --overwrite
     kubectl label node eniac-node4 node-role.kubernetes.io/worker=worker --overwrite
-
-- name: Taint control plane to allow scheduling only certain jobs
-  ansible.builtin.shell: |
-    kubectl taint nodes eniac-node1 node-role.kubernetes.io/control-plane:NoSchedule --overwrite
 
 - name: Install Flux
   ansible.builtin.shell: |
