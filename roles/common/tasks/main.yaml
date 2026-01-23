@@ -124,6 +124,7 @@
     - neovim
     - network-manager
     - nftables
+    - nfs-common
     - openssl
     - open-iscsi
     - pigz
