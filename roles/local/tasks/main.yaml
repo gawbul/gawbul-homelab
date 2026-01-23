@@ -20,3 +20,14 @@
       --personal \
       --components source-controller,kustomize-controller,helm-controller,notification-controller \
       --components-extra image-reflector-controller,image-automation-controller
+
+- name: Check if SOPS age secret exists
+  ansible.builtin.command: kubectl get secret sops-age -n flux-system
+  register: sops_secret_check
+  ignore_errors: true
+  changed_when: false
+
+- name: Create SOPS age secret
+  ansible.builtin.shell: |
+    cat ~/.config/sops/age/keys.txt | kubectl create secret generic sops-age --namespace=flux-system --from-file=age.agekey=/dev/stdin
+  when: sops_secret_check.rc != 0
