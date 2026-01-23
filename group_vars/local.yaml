@@ -5,5 +5,5 @@
 github_token: "{{ flux_github_token }}"
 github_username: gawbul
 gitops_repository: gawbul-gitops
-gitops_branch: main
+gitops_branch: flux-bootstrap
 gitops_path: clusters/eniac
