@@ -20,3 +20,29 @@
       --personal \
       --components source-controller,kustomize-controller,helm-controller,notification-controller \
       --components-extra image-reflector-controller,image-automation-controller
+
+- name: Ensure SOPS age directory exists
+  ansible.builtin.file:
+    path: "{{ lookup('env', 'HOME') }}/.config/sops/age"
+    state: directory
+    mode: '0700'
+
+- name: Check if SOPS age key exists
+  ansible.builtin.stat:
+    path: "{{ lookup('env', 'HOME') }}/.config/sops/age/keys.txt"
+  register: sops_key_file
+
+- name: Generate SOPS age key
+  ansible.builtin.command: age-keygen -o "{{ lookup('env', 'HOME') }}/.config/sops/age/keys.txt"
+  when: not sops_key_file.stat.exists
+
+- name: Check if SOPS age secret exists
+  ansible.builtin.command: kubectl get secret sops-age -n flux-system
+  register: sops_secret_check
+  ignore_errors: true
+  changed_when: false
+
+- name: Create SOPS age secret
+  ansible.builtin.shell: |
+    cat ~/.config/sops/age/keys.txt | kubectl create secret generic sops-age --namespace=flux-system --from-file=age.agekey=/dev/stdin
+  when: sops_secret_check.rc != 0
