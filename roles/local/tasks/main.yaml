@@ -9,6 +9,32 @@
     kubectl label node {{ item.key }} node-role.kubernetes.io/worker=worker --overwrite
   loop: "{{ nodes | dict2items }}"
 
+- name: Verify GitHub authentication
+  ansible.builtin.command: gh auth status
+  changed_when: false
+
+- name: Check if GitOps branch exists
+  ansible.builtin.command: gh api repos/{{ github_username }}/{{ gitops_repository }}/branches/{{ gitops_branch }}
+  register: branch_check
+  ignore_errors: true
+  changed_when: false
+
+- name: Create GitOps branch if missing
+  block:
+    - name: Get default branch SHA
+      ansible.builtin.command: >
+        gh api repos/{{ github_username }}/{{ gitops_repository }}/git/ref/heads/main
+        --jq .object.sha
+      register: default_branch_sha
+      changed_when: false
+
+    - name: Create branch ref
+      ansible.builtin.command: >
+        gh api repos/{{ github_username }}/{{ gitops_repository }}/git/refs
+        -f ref="refs/heads/{{ gitops_branch }}"
+        -f sha="{{ default_branch_sha.stdout }}"
+  when: branch_check.rc != 0
+
 - name: Install Flux
   ansible.builtin.shell: |
     echo "{{ github_token }}" | flux bootstrap github \
@@ -19,7 +45,86 @@
       --path={{ gitops_path}} \
       --personal \
       --components source-controller,kustomize-controller,helm-controller,notification-controller \
-      --components-extra image-reflector-controller,image-automation-controller
+      --components-extra image-reflector-controller,image-automation-controller,source-watcher
+
+- name: Update Flux sync target to main
+  ansible.builtin.shell: |
+    set -e
+    TEMP_DIR=$(mktemp -d)
+    git clone --depth 1 --branch {{ gitops_branch }} "https://{{ github_username }}:{{ github_token }}@github.com/{{ github_username }}/{{ gitops_repository }}.git" "$TEMP_DIR"
+    cd "$TEMP_DIR"
+
+    # Update the branch reference in gotk-sync.yaml
+    sed -i '' 's/branch: {{ gitops_branch }}/branch: main/' {{ gitops_path }}/flux-system/gotk-sync.yaml
+
+    # Commit and push if changed
+    if ! git diff --quiet; then
+      git config user.name "Ansible Automation"
+      git config user.email "ansible@localhost"
+      git add {{ gitops_path }}/flux-system/gotk-sync.yaml
+      git commit -m "chore: Switch Flux sync target to main"
+      git push origin {{ gitops_branch }}
+    fi
+
+    rm -rf "$TEMP_DIR"
+
+- name: Check if changes exist between branches
+  ansible.builtin.command: >
+    gh api repos/{{ github_username }}/{{ gitops_repository }}/compare/main...{{ gitops_branch }}
+    --jq .ahead_by
+  register: branch_diff
+  changed_when: false
+
+- name: Create Pull Request for Flux changes
+  ansible.builtin.shell: |
+    gh pr create \
+      --repo {{ github_username }}/{{ gitops_repository }} \
+      --base main \
+      --head {{ gitops_branch }} \
+      --title "chore: Flux Bootstrap Update" \
+      --body "Automated PR created by Ansible after Flux bootstrap."
+  register: pr_creation
+  when: branch_diff.stdout | int > 0
+  failed_when:
+    - pr_creation.rc != 0
+    - "'already exists' not in pr_creation.stderr"
+  changed_when: pr_creation.rc == 0
+
+- name: Get Pull Request details
+  ansible.builtin.command: >
+    gh pr view {{ gitops_branch }}
+    --repo {{ github_username }}/{{ gitops_repository }}
+    --json number,mergeable
+  register: pr_details
+  when: branch_diff.stdout | int > 0
+  changed_when: false
+
+- name: Enable auto-merge for Flux PR
+  ansible.builtin.command: >
+    gh pr merge {{ (pr_details.stdout | from_json).number }}
+    --repo {{ github_username }}/{{ gitops_repository }}
+    --auto --squash
+  when:
+    - branch_diff.stdout | int > 0
+
+- name: Wait for Flux PR to be merged
+  ansible.builtin.command: >
+    gh pr view {{ (pr_details.stdout | from_json).number }}
+    --repo {{ github_username }}/{{ gitops_repository }}
+    --json state --jq .state
+  register: pr_state
+  until: pr_state.stdout == "MERGED"
+  retries: 30
+  delay: 10
+  when:
+    - branch_diff.stdout | int > 0
+
+- name: Explicitly point Flux GitRepository to main
+  ansible.builtin.command: >
+    kubectl patch gitrepository flux-system -n flux-system
+    --type='json' -p='[{"op": "replace", "path": "/spec/ref/branch", "value": "main"}]'
+  when:
+    - branch_diff.stdout | int > 0
 
 - name: Ensure SOPS age directory exists
   ansible.builtin.file:
