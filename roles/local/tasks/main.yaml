@@ -10,12 +10,41 @@
     state: directory
     mode: '0700'
 
-- name: Install kubeconfig to ~/.kube/config
-  ansible.builtin.copy:
-    src: "{{ playbook_dir }}/kubeconfig/k3s.yaml"
-    dest: "{{ lookup('env', 'HOME') }}/.kube/config"
-    mode: '0600'
-    backup: true
+- name: Merge kubeconfig to ~/.kube/config
+  ansible.builtin.shell: |
+    set -e
+    NEW_CONFIG="{{ playbook_dir }}/kubeconfig/k3s.yaml"
+    TEMP_CONFIG=$(mktemp)
+    MAIN_CONFIG="{{ lookup('env', 'HOME') }}/.kube/config"
+
+    cp "$NEW_CONFIG" "$TEMP_CONFIG"
+
+    # Use yq to rename cluster, user, and context elements to 'eniac'
+    # This assumes yq v4 syntax
+    yq -i '
+      .clusters[].name = "eniac" |
+      .users[].name = "eniac" |
+      .contexts[].name = "eniac" |
+      .contexts[].context.cluster = "eniac" |
+      .contexts[].context.user = "eniac"
+    ' "$TEMP_CONFIG"
+
+    # Merge
+    if [ -f "$MAIN_CONFIG" ]; then
+        cp "$MAIN_CONFIG" "${MAIN_CONFIG}.bak"
+        KUBECONFIG="$MAIN_CONFIG:$TEMP_CONFIG" kubectl config view --flatten > "${MAIN_CONFIG}.new"
+        mv "${MAIN_CONFIG}.new" "$MAIN_CONFIG"
+    else
+        mv "$TEMP_CONFIG" "$MAIN_CONFIG"
+    fi
+
+    # Set context
+    kubectl config use-context eniac
+
+    rm -f "$TEMP_CONFIG"
+    chmod 600 "$MAIN_CONFIG"
+  args:
+    executable: /bin/bash
 
 - name: Apply worker node labels to all nodes
   ansible.builtin.shell: |
