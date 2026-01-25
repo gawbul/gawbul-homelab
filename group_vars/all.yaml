@@ -30,5 +30,7 @@ nodes:
       name: eniac-node4
       fqdn: eniac-node4.kubernetes.local
       ip_address: "192.168.50.7"
+    labels:
+      - workload=ai
 
 router_gateway_ip: "192.168.50.1"

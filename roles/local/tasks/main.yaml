@@ -46,9 +46,12 @@
   args:
     executable: /bin/bash
 
-- name: Apply worker node labels to all nodes
+- name: Apply node labels
   ansible.builtin.shell: |
     kubectl label node {{ item.key }} node-role.kubernetes.io/worker=worker --overwrite
+    {% for label in item.value.labels | default([]) %}
+    kubectl label node {{ item.key }} {{ label }} --overwrite
+    {% endfor %}
   loop: "{{ nodes | dict2items }}"
 
 - name: Verify GitHub authentication
