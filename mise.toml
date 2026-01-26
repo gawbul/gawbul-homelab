@@ -57,17 +57,6 @@ run = """
 ansible-playbook --inventory hosts site.yaml --tags k3s
 """
 
-[tasks.etc-hosts-set]
-description = "Set the hostnames in /etc/hosts"
-run = """
-sudo sed -E -i '' '/^.*[a-z.-]+kubernetes.local.*$/d' /etc/hosts
-read -r -a NODE_IPS <<< "${HOMELAB_IPS}"
-read -r -a NODE_NAMES <<< "${HOMELAB_NODES}"
-for i in {0..3}; do
-  echo "${NODE_IPS[$i]}	${NODE_NAMES[$i]}.kubernetes.local	${NODE_NAMES[$i]}" | sudo tee -a /etc/hosts
-done
-"""
-
 [tasks.kubeconfig-get]
 description = "Fetch the K3s kubeconfig from the control plane"
 run = """

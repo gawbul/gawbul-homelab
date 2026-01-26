@@ -47,13 +47,7 @@ This project uses [mise](https://mise.jdx.dev/) to manage all tooling versions (
 
 The entire cluster can be provisioned with a few commands.
 
-1.  **Configure Local Networking:**
-    Update your local `/etc/hosts` to resolve node hostnames.
-    ```bash
-    mise run etc-hosts-set
-    ```
-
-2.  **Deploy Infrastructure:**
+1.  **Deploy Infrastructure:**
     Run the Ansible playbook to configure the OS, install K3s, and bootstrap Flux.
     ```bash
     mise run ansible-playbook-run
