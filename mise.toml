@@ -61,7 +61,7 @@ ansible-playbook --inventory hosts site.yaml --tags k3s
 description = "Fetch the K3s kubeconfig from the control plane"
 run = """
 scp eniac-node1:/etc/rancher/k3s/k3s.yaml kubeconfig/k3s.yaml
-sed -i '' 's/127.0.0.1/eniac-node1/g' kubeconfig/k3s.yaml
+sed -i '' 's/127.0.0.1/eniac-node1.home.gawbul.io/g' kubeconfig/k3s.yaml
 """
 
 [tasks.age-generate-keys]
