@@ -4,8 +4,7 @@
 - name: Set the hostname on the machine
   become: true
   ansible.builtin.hostname:
-    name: "{{ item.value.name }}"
-  with_dict: "{{ nodes[inventory_hostname] }}"
+    name: "{{ nodes[inventory_hostname].node_info.name }}"
 
 - name: Ensure /etc/hosts is populated correctly
   block:
@@ -14,9 +13,8 @@
       ansible.builtin.lineinfile:
         path: /etc/hosts
         regexp: "^(127.0.1.1).*$"
-        line: '\1 {{ item.value.fqdn }} {{ item.value.name }}'
+        line: '\1 {{ nodes[inventory_hostname].node_info.fqdn }} {{ nodes[inventory_hostname].node_info.name }}'
         backrefs: yes
-      with_dict: "{{ nodes[inventory_hostname] }}"
 
     - name: Set all node hostnames in /etc/hosts
       become: true
@@ -50,7 +48,6 @@
     src: 99-ethernet-config-{{ inventory_hostname }}.yaml.j2
     dest: /etc/netplan/99-ethernet-config.yaml
     mode: "0600"
-  with_dict: "{{ nodes[inventory_hostname] }}"
   notify: Apply Netplan
   tags: netplan
 
