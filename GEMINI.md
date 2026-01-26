@@ -36,9 +36,6 @@ This project uses [mise](https://mise.jdx.dev/) for tool management and task run
 The cluster state is applied via Ansible commands:
 
 ```bash
-# Set local /etc/hosts for resolution
-mise run etc-hosts-set
-
 # Apply the full site.yaml playbook to all nodes
 mise run ansible-playbook-run
 

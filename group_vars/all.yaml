@@ -13,22 +13,22 @@ nodes:
   eniac-node1:
     node_info:
       name: eniac-node1
-      fqdn: eniac-node1.kubernetes.local
+      fqdn: eniac-node1.home.gawbul.io
       ip_address: "192.168.50.4"
   eniac-node2:
     node_info:
       name: eniac-node2
-      fqdn: eniac-node2.kubernetes.local
+      fqdn: eniac-node2.home.gawbul.io
       ip_address: "192.168.50.5"
   eniac-node3:
     node_info:
       name: eniac-node3
-      fqdn: eniac-node3.kubernetes.local
+      fqdn: eniac-node3.home.gawbul.io
       ip_address: "192.168.50.6"
   eniac-node4:
     node_info:
       name: eniac-node4
-      fqdn: eniac-node4.kubernetes.local
+      fqdn: eniac-node4.home.gawbul.io
       ip_address: "192.168.50.7"
     labels:
       - workload=ai

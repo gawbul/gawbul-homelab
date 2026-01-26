@@ -19,7 +19,7 @@ disable:
 write-kubeconfig-mode: "0644"
 tls-san:
   - {{ hostvars[inventory_hostname]['ansible_host'] | default(inventory_hostname) }}
-  - {{ inventory_hostname }}.kubernetes.local
+  - {{ inventory_hostname }}.home.gawbul.io
 flannel-backend: wireguard-native  # Best practice for secure inter-node traffic
 
 {% else %}

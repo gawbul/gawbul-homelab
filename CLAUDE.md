@@ -12,7 +12,7 @@ This is a Kubernetes homelab setup running on Raspberry Pi 5 cluster (4 nodes na
 **Control Plane:** eniac-node1
 **Worker Nodes:** eniac-node1, eniac-node2, eniac-node3, eniac-node4
 **Network:** 192.168.50.4-7 (static IPs), Pod CIDR: 10.42.0.0/16, Service CIDR: 10.43.0.0/16 (K3s defaults)
-**Domain:** kubernetes.local
+**Domain:** home.gawbul.io
 
 The cluster uses:
 
@@ -31,13 +31,6 @@ All tools are managed via **mise** (defined in `mise.toml`). Key tools include:
 - Utilities: jq, yq, shellcheck
 
 ## Common Development Commands
-
-### Initial Setup
-
-```bash
-# Set hostnames in /etc/hosts
-mise run etc-hosts-set
-```
 
 ### Deploy & Manage Cluster
 
@@ -95,5 +88,8 @@ systemctl status k3s
 journalctl -u k3s -f
 ```
 
-### DNS Issues
-Entries in `/etc/hosts` on the local machine must include the short hostname (e.g., `eniac-node1`) for the kubeconfig to work correctly. Run `mise run etc-hosts-set` to fix this.
+### Local Hostname Resolution
+
+Ensure your local machine can resolve the node hostnames (e.g., `eniac-node1.home.gawbul.io`) via your local DNS (e.g., Pi-hole).
+
+### Common Errors
