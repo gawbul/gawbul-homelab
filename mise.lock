@@ -56,78 +56,78 @@ url = "https://github.com/sigstore/cosign/releases/download/v3.0.5/cosign-window
 provenance = "cosign"
 
 [[tools.flux2]]
-version = "2.8.1"
+version = "2.8.3"
 backend = "aqua:fluxcd/flux2"
 
 [tools.flux2."platforms.linux-arm64"]
-checksum = "sha256:0cf9f567939c38e9735f1dad525c2118d1e0892abdb6ff0a03134551f61f0804"
-url = "https://github.com/fluxcd/flux2/releases/download/v2.8.1/flux_2.8.1_linux_arm64.tar.gz"
+checksum = "sha256:8f02cd3c2f058434b40cb264d4f3d961a3d5bc7c4985cc4544946f9b8224632b"
+url = "https://github.com/fluxcd/flux2/releases/download/v2.8.3/flux_2.8.3_linux_arm64.tar.gz"
 provenance = "slsa"
 
 [tools.flux2."platforms.linux-arm64-musl"]
-checksum = "sha256:0cf9f567939c38e9735f1dad525c2118d1e0892abdb6ff0a03134551f61f0804"
-url = "https://github.com/fluxcd/flux2/releases/download/v2.8.1/flux_2.8.1_linux_arm64.tar.gz"
+checksum = "sha256:8f02cd3c2f058434b40cb264d4f3d961a3d5bc7c4985cc4544946f9b8224632b"
+url = "https://github.com/fluxcd/flux2/releases/download/v2.8.3/flux_2.8.3_linux_arm64.tar.gz"
 provenance = "slsa"
 
 [tools.flux2."platforms.linux-x64"]
-checksum = "sha256:15d96c2246e129903c7bdaeb9a5cd3074c774763523601526e1c31f7b1513f08"
-url = "https://github.com/fluxcd/flux2/releases/download/v2.8.1/flux_2.8.1_linux_amd64.tar.gz"
+checksum = "sha256:e8b3f87ae73f37656af087cec1bd82ce9034860c2a5d427042d2ee9135fcc8bc"
+url = "https://github.com/fluxcd/flux2/releases/download/v2.8.3/flux_2.8.3_linux_amd64.tar.gz"
 provenance = "slsa"
 
 [tools.flux2."platforms.linux-x64-musl"]
-checksum = "sha256:15d96c2246e129903c7bdaeb9a5cd3074c774763523601526e1c31f7b1513f08"
-url = "https://github.com/fluxcd/flux2/releases/download/v2.8.1/flux_2.8.1_linux_amd64.tar.gz"
+checksum = "sha256:e8b3f87ae73f37656af087cec1bd82ce9034860c2a5d427042d2ee9135fcc8bc"
+url = "https://github.com/fluxcd/flux2/releases/download/v2.8.3/flux_2.8.3_linux_amd64.tar.gz"
 provenance = "slsa"
 
 [tools.flux2."platforms.macos-arm64"]
-checksum = "sha256:8dd67b9151c77115e4486cf8c0533a9fce8b147803dab66b6f07fa201380e9af"
-url = "https://github.com/fluxcd/flux2/releases/download/v2.8.1/flux_2.8.1_darwin_arm64.tar.gz"
+checksum = "sha256:71c307573f79e63a21ef9f1f6b9ede3c2017ac5f17a771346154554cc0e4163a"
+url = "https://github.com/fluxcd/flux2/releases/download/v2.8.3/flux_2.8.3_darwin_arm64.tar.gz"
 
 [tools.flux2."platforms.macos-arm64".provenance.slsa]
-url = "https://github.com/fluxcd/flux2/releases/download/v2.8.1/provenance.intoto.jsonl"
+url = "https://github.com/fluxcd/flux2/releases/download/v2.8.3/provenance.intoto.jsonl"
 
 [tools.flux2."platforms.macos-x64"]
-checksum = "sha256:06cd154c50520bfc5cd948199cfdaf8ac3668c85d03424815237cf48bd686ccd"
-url = "https://github.com/fluxcd/flux2/releases/download/v2.8.1/flux_2.8.1_darwin_amd64.tar.gz"
+checksum = "sha256:24f965c8001a2cd6ddbbe5615aa5d88adfdf5e685772a707610b95d70b93fe50"
+url = "https://github.com/fluxcd/flux2/releases/download/v2.8.3/flux_2.8.3_darwin_amd64.tar.gz"
 provenance = "slsa"
 
 [tools.flux2."platforms.windows-x64"]
-checksum = "sha256:657bd35929c81599618d193edc47255373cf7c11ec54f107e33297603a311a70"
-url = "https://github.com/fluxcd/flux2/releases/download/v2.8.1/flux_2.8.1_windows_amd64.zip"
+checksum = "sha256:9da35bc51e00ed95fbc516aebc9d149f24aa549a55bafe9f7f9fa9b5a61514d2"
+url = "https://github.com/fluxcd/flux2/releases/download/v2.8.3/flux_2.8.3_windows_amd64.zip"
 provenance = "slsa"
 
 [[tools.gh]]
-version = "2.88.0"
+version = "2.88.1"
 backend = "aqua:cli/cli"
 
 [tools.gh."platforms.linux-arm64"]
-checksum = "sha256:d9bffed5c9bb65fca9d6097eaa3ebd6edb7438c8bfd641f8595a39c7dc69042f"
-url = "https://github.com/cli/cli/releases/download/v2.88.0/gh_2.88.0_linux_arm64.tar.gz"
+checksum = "sha256:039ce25aab0cfa0ea5160e3db75ed44699bde4b20ff63ec5991f82201f1b33b8"
+url = "https://github.com/cli/cli/releases/download/v2.88.1/gh_2.88.1_linux_arm64.tar.gz"
 
 [tools.gh."platforms.linux-arm64-musl"]
-checksum = "sha256:d9bffed5c9bb65fca9d6097eaa3ebd6edb7438c8bfd641f8595a39c7dc69042f"
-url = "https://github.com/cli/cli/releases/download/v2.88.0/gh_2.88.0_linux_arm64.tar.gz"
+checksum = "sha256:039ce25aab0cfa0ea5160e3db75ed44699bde4b20ff63ec5991f82201f1b33b8"
+url = "https://github.com/cli/cli/releases/download/v2.88.1/gh_2.88.1_linux_arm64.tar.gz"
 
 [tools.gh."platforms.linux-x64"]
-checksum = "sha256:4d268420ad31846a807e3012ac4b6547df662777e7776fa7f4c55ce062e15b15"
-url = "https://github.com/cli/cli/releases/download/v2.88.0/gh_2.88.0_linux_amd64.tar.gz"
+checksum = "sha256:36352a993b97e9758793cdb87f9ba674bd6d88c914488e122be78a1962203803"
+url = "https://github.com/cli/cli/releases/download/v2.88.1/gh_2.88.1_linux_amd64.tar.gz"
 
 [tools.gh."platforms.linux-x64-musl"]
-checksum = "sha256:4d268420ad31846a807e3012ac4b6547df662777e7776fa7f4c55ce062e15b15"
-url = "https://github.com/cli/cli/releases/download/v2.88.0/gh_2.88.0_linux_amd64.tar.gz"
+checksum = "sha256:36352a993b97e9758793cdb87f9ba674bd6d88c914488e122be78a1962203803"
+url = "https://github.com/cli/cli/releases/download/v2.88.1/gh_2.88.1_linux_amd64.tar.gz"
 
 [tools.gh."platforms.macos-arm64"]
-checksum = "sha256:0ea4edb4b1be0ffa2b4c53bcce81691dd58647bb03bfb5b9fdb01ee5b2afc581"
-url = "https://github.com/cli/cli/releases/download/v2.88.0/gh_2.88.0_macOS_arm64.zip"
+checksum = "sha256:bdbeed4821d450ef0d14821d856c05b308ab449fbf60527f298d96fbf5d2447b"
+url = "https://github.com/cli/cli/releases/download/v2.88.1/gh_2.88.1_macOS_arm64.zip"
 provenance = "github-attestations"
 
 [tools.gh."platforms.macos-x64"]
-checksum = "sha256:49d309a6b2152807fb0a70d6db02d14a2d9264b01f52c852938aadb331f4cf70"
-url = "https://github.com/cli/cli/releases/download/v2.88.0/gh_2.88.0_macOS_amd64.zip"
+checksum = "sha256:ff0fc4bdb9699f0c02e5bcdcbd09d0f8e4c4659aa5d30bcd39a3557ed7379b2e"
+url = "https://github.com/cli/cli/releases/download/v2.88.1/gh_2.88.1_macOS_amd64.zip"
 
 [tools.gh."platforms.windows-x64"]
-checksum = "sha256:0cbf0abde47cd873edbf937e30665d665c07145ff14199f81358d0188affae57"
-url = "https://github.com/cli/cli/releases/download/v2.88.0/gh_2.88.0_windows_amd64.zip"
+checksum = "sha256:8fdaac525d8919f9f8c265f99ffa26189e5f1fd3a35636adad4fd890a141a555"
+url = "https://github.com/cli/cli/releases/download/v2.88.1/gh_2.88.1_windows_amd64.zip"
 
 [[tools.go]]
 version = "1.26.1"
@@ -162,36 +162,36 @@ checksum = "sha256:9b68112c913f45b7aebbf13c036721264bbba7e03a642f8f7490c561eebd1
 url = "https://dl.google.com/go/go1.26.1.windows-amd64.zip"
 
 [[tools.helm]]
-version = "4.1.1"
+version = "4.1.3"
 backend = "aqua:helm/helm"
 
 [tools.helm."platforms.linux-arm64"]
-checksum = "sha256:02a5fb7742469d2d132e24cb7c3f52885894043576588c6788b6813297629edd"
-url = "https://get.helm.sh/helm-v4.1.1-linux-arm64.tar.gz"
+checksum = "sha256:5db45e027cc8de4677ec869e5d803fc7631b0bab1c1eb62ac603a62d22359a43"
+url = "https://get.helm.sh/helm-v4.1.3-linux-arm64.tar.gz"
 
 [tools.helm."platforms.linux-arm64-musl"]
-checksum = "sha256:02a5fb7742469d2d132e24cb7c3f52885894043576588c6788b6813297629edd"
-url = "https://get.helm.sh/helm-v4.1.1-linux-arm64.tar.gz"
+checksum = "sha256:5db45e027cc8de4677ec869e5d803fc7631b0bab1c1eb62ac603a62d22359a43"
+url = "https://get.helm.sh/helm-v4.1.3-linux-arm64.tar.gz"
 
 [tools.helm."platforms.linux-x64"]
-checksum = "sha256:5d4c7623283e6dfb1971957f4b755468ab64917066a8567dd50464af298f4031"
-url = "https://get.helm.sh/helm-v4.1.1-linux-amd64.tar.gz"
+checksum = "sha256:02ce9722d541238f81459938b84cf47df2fdf1187493b4bfb2346754d82a4700"
+url = "https://get.helm.sh/helm-v4.1.3-linux-amd64.tar.gz"
 
 [tools.helm."platforms.linux-x64-musl"]
-checksum = "sha256:5d4c7623283e6dfb1971957f4b755468ab64917066a8567dd50464af298f4031"
-url = "https://get.helm.sh/helm-v4.1.1-linux-amd64.tar.gz"
+checksum = "sha256:02ce9722d541238f81459938b84cf47df2fdf1187493b4bfb2346754d82a4700"
+url = "https://get.helm.sh/helm-v4.1.3-linux-amd64.tar.gz"
 
 [tools.helm."platforms.macos-arm64"]
-checksum = "sha256:b8f49e105b1d2fd8c8a90ba3fc9af48db91d2d1ca3b9e788352fc7c896bbb71a"
-url = "https://get.helm.sh/helm-v4.1.1-darwin-arm64.tar.gz"
+checksum = "sha256:21c02fe2f7e27d08e24a6bf93103f9d2b25aab6f13f91814b2cfabc99b108a5e"
+url = "https://get.helm.sh/helm-v4.1.3-darwin-arm64.tar.gz"
 
 [tools.helm."platforms.macos-x64"]
-checksum = "sha256:6b8dbb03abb74e9ab8e69ca3f9b6459178be11317d0ac502f922621c05fdc866"
-url = "https://get.helm.sh/helm-v4.1.1-darwin-amd64.tar.gz"
+checksum = "sha256:742132e11cc08a81c97f70180cd714ae8376f8c896247a7b14ae1f51838b5a0b"
+url = "https://get.helm.sh/helm-v4.1.3-darwin-amd64.tar.gz"
 
 [tools.helm."platforms.windows-x64"]
-checksum = "sha256:bd0528a18d8a22431426eab3138a9479dfae00350719ac4150e81b123bfd6081"
-url = "https://get.helm.sh/helm-v4.1.1-windows-amd64.tar.gz"
+checksum = "sha256:fb8dc9b5c2f74456443a6a1bb431fe109d744151423133d921ec8a43b63cab90"
+url = "https://get.helm.sh/helm-v4.1.3-windows-amd64.tar.gz"
 
 [[tools.hk]]
 version = "1.38.0"
@@ -262,40 +262,68 @@ checksum = "sha256:9d4e8672c4e55c04cb137475062bc88da7fc0878e04d53df181196449600d
 url = "https://github.com/derailed/k9s/releases/download/v0.50.18/k9s_Windows_amd64.zip"
 
 [[tools.kubectl]]
-version = "1.35.2"
+version = "1.35.3"
 backend = "aqua:kubernetes/kubectl"
 
 [tools.kubectl."platforms.linux-arm64"]
-checksum = "sha256:cd859449f54ad2cb05b491c490c13bb836cdd0886ae013c0aed3dd67ff747467"
-url = "https://dl.k8s.io/v1.35.2/bin/linux/arm64/kubectl"
+checksum = "sha256:6f0cd088a82dde5d5807122056069e2fac4ed447cc518efc055547ae46525f14"
+url = "https://dl.k8s.io/v1.35.3/bin/linux/arm64/kubectl"
 
 [tools.kubectl."platforms.linux-arm64-musl"]
-checksum = "sha256:cd859449f54ad2cb05b491c490c13bb836cdd0886ae013c0aed3dd67ff747467"
-url = "https://dl.k8s.io/v1.35.2/bin/linux/arm64/kubectl"
+checksum = "sha256:6f0cd088a82dde5d5807122056069e2fac4ed447cc518efc055547ae46525f14"
+url = "https://dl.k8s.io/v1.35.3/bin/linux/arm64/kubectl"
 
 [tools.kubectl."platforms.linux-x64"]
-checksum = "sha256:924eb50779153f20cb668117d141440b95df2f325a64452d78dff9469145e277"
-url = "https://dl.k8s.io/v1.35.2/bin/linux/amd64/kubectl"
+checksum = "sha256:fd31c7d7129260e608f6faf92d5984c3267ad0b5ead3bced2fe125686e286ad6"
+url = "https://dl.k8s.io/v1.35.3/bin/linux/amd64/kubectl"
 
 [tools.kubectl."platforms.linux-x64-musl"]
-checksum = "sha256:924eb50779153f20cb668117d141440b95df2f325a64452d78dff9469145e277"
-url = "https://dl.k8s.io/v1.35.2/bin/linux/amd64/kubectl"
+checksum = "sha256:fd31c7d7129260e608f6faf92d5984c3267ad0b5ead3bced2fe125686e286ad6"
+url = "https://dl.k8s.io/v1.35.3/bin/linux/amd64/kubectl"
 
 [tools.kubectl."platforms.macos-arm64"]
-checksum = "sha256:b0b59cdd7ba20ca20b85214943100e578dd50ddd85242fcddf277a87c2249706"
-url = "https://dl.k8s.io/v1.35.2/bin/darwin/arm64/kubectl"
+checksum = "sha256:280651239d84bab214ba83403666bf6976a5fa0dbdb41404f26eb6f276d34963"
+url = "https://dl.k8s.io/v1.35.3/bin/darwin/arm64/kubectl"
 
 [tools.kubectl."platforms.macos-x64"]
-checksum = "sha256:163955964d4ed9e66656eab45c0114f5c1110d1b430ace432b20ddc430023df5"
-url = "https://dl.k8s.io/v1.35.2/bin/darwin/amd64/kubectl"
+checksum = "sha256:2f339b1eae2e1792ec08da281b37afbeee94f70bed6b7398e7efd81ba08f8d37"
+url = "https://dl.k8s.io/v1.35.3/bin/darwin/amd64/kubectl"
 
 [tools.kubectl."platforms.windows-x64"]
-checksum = "sha256:a6d02010aae330a3031afe7843747d5a18db59c9f0bca415e45fb24bbdccdd2c"
-url = "https://dl.k8s.io/v1.35.2/bin/windows/amd64/kubectl.exe"
+checksum = "sha256:6c367f9c34be9a13a94eb523dd62006973e1d051adea7d6bcf800dde3f6e84df"
+url = "https://dl.k8s.io/v1.35.3/bin/windows/amd64/kubectl.exe"
 
 [[tools.kubectx]]
-version = "0.9.5"
+version = "0.10.0"
 backend = "aqua:ahmetb/kubectx"
+
+[tools.kubectx."platforms.linux-arm64"]
+checksum = "sha256:11bb7fb2c519c3f51b9a308894c1024a34632f0981ea3052b62e31c4408a42ca"
+url = "https://github.com/ahmetb/kubectx/releases/download/v0.10.0/kubectx_v0.10.0_linux_arm64.tar.gz"
+
+[tools.kubectx."platforms.linux-arm64-musl"]
+checksum = "sha256:11bb7fb2c519c3f51b9a308894c1024a34632f0981ea3052b62e31c4408a42ca"
+url = "https://github.com/ahmetb/kubectx/releases/download/v0.10.0/kubectx_v0.10.0_linux_arm64.tar.gz"
+
+[tools.kubectx."platforms.linux-x64"]
+checksum = "sha256:ebfc356c646d9faee6750287d93db787a293c5d399c531993c4d2c1024ab0614"
+url = "https://github.com/ahmetb/kubectx/releases/download/v0.10.0/kubectx_v0.10.0_linux_x86_64.tar.gz"
+
+[tools.kubectx."platforms.linux-x64-musl"]
+checksum = "sha256:ebfc356c646d9faee6750287d93db787a293c5d399c531993c4d2c1024ab0614"
+url = "https://github.com/ahmetb/kubectx/releases/download/v0.10.0/kubectx_v0.10.0_linux_x86_64.tar.gz"
+
+[tools.kubectx."platforms.macos-arm64"]
+checksum = "sha256:5932baae8e1f2ef049d66cb0c9f24af0403f4d2ac0179c88421a939e935e4231"
+url = "https://github.com/ahmetb/kubectx/releases/download/v0.10.0/kubectx_v0.10.0_darwin_arm64.tar.gz"
+
+[tools.kubectx."platforms.macos-x64"]
+checksum = "sha256:34991cb2cca67f0e76581c8758b684a6b7b5d1f0dd4da3493420d2d669da722d"
+url = "https://github.com/ahmetb/kubectx/releases/download/v0.10.0/kubectx_v0.10.0_darwin_x86_64.tar.gz"
+
+[tools.kubectx."platforms.windows-x64"]
+checksum = "sha256:01139747422de3a1375d57fe4a0b5cd512f3e009f09b9d6d6c3d0c1611118e73"
+url = "https://github.com/ahmetb/kubectx/releases/download/v0.10.0/kubectx_v0.10.0_windows_x86_64.zip"
 
 [[tools.pkl]]
 version = "0.31.0"
@@ -370,30 +398,30 @@ checksum = "blake3:ad4957ed937da4e876d19e3500fc31d104e43b6e4e11d57a7b7c40140bc87
 url = "https://github.com/koalaman/shellcheck/releases/download/v0.11.0/shellcheck-v0.11.0.darwin.aarch64.tar.xz"
 
 [[tools.skaffold]]
-version = "2.17.3"
+version = "2.18.1"
 backend = "aqua:GoogleContainerTools/skaffold"
 
 [tools.skaffold."platforms.linux-arm64"]
-url = "https://storage.googleapis.com/skaffold/releases/v2.17.3/skaffold-linux-arm64"
+url = "https://storage.googleapis.com/skaffold/releases/v2.18.1/skaffold-linux-arm64"
 
 [tools.skaffold."platforms.linux-arm64-musl"]
-url = "https://storage.googleapis.com/skaffold/releases/v2.17.3/skaffold-linux-arm64"
+url = "https://storage.googleapis.com/skaffold/releases/v2.18.1/skaffold-linux-arm64"
 
 [tools.skaffold."platforms.linux-x64"]
-url = "https://storage.googleapis.com/skaffold/releases/v2.17.3/skaffold-linux-amd64"
+url = "https://storage.googleapis.com/skaffold/releases/v2.18.1/skaffold-linux-amd64"
 
 [tools.skaffold."platforms.linux-x64-musl"]
-url = "https://storage.googleapis.com/skaffold/releases/v2.17.3/skaffold-linux-amd64"
+url = "https://storage.googleapis.com/skaffold/releases/v2.18.1/skaffold-linux-amd64"
 
 [tools.skaffold."platforms.macos-arm64"]
-checksum = "blake3:a80d1786f4232e69ca488701578b012821b767146db2b5ee48c51f2e95b28d75"
-url = "https://storage.googleapis.com/skaffold/releases/v2.17.3/skaffold-darwin-arm64"
+checksum = "blake3:a37ad31bf1045c53fbbf2c074eb965824baaba8f5a30d2e15626f46446773abc"
+url = "https://storage.googleapis.com/skaffold/releases/v2.18.1/skaffold-darwin-arm64"
 
 [tools.skaffold."platforms.macos-x64"]
-url = "https://storage.googleapis.com/skaffold/releases/v2.17.3/skaffold-darwin-amd64"
+url = "https://storage.googleapis.com/skaffold/releases/v2.18.1/skaffold-darwin-amd64"
 
 [tools.skaffold."platforms.windows-x64"]
-url = "https://storage.googleapis.com/skaffold/releases/v2.17.3/skaffold-windows-amd64.exe"
+url = "https://storage.googleapis.com/skaffold/releases/v2.18.1/skaffold-windows-amd64.exe"
 
 [[tools.slsa-verifier]]
 version = "2.7.1"
@@ -403,7 +431,7 @@ backend = "ubi:slsa-framework/slsa-verifier"
 checksum = "blake3:af93f77462964b7eeb93b9f45ccedeefc641305f6618d9ffc2480d89b0cceed6"
 
 [[tools.usage]]
-version = "2.18.2"
+version = "3.0.0"
 backend = "ubi:jdx/usage"
 
 [[tools.yq]]
