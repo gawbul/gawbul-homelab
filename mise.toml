@@ -1,4 +1,5 @@
 [tools]
+age = "latest"
 ansible = "latest"
 container-structure-test = "latest"
 cosign = "latest"
@@ -16,6 +17,7 @@ python = "latest"
 shellcheck = "latest"
 skaffold = "latest"
 slsa-verifier = "latest"
+sops = "latest"
 usage = "latest"
 yq = "latest"
 
@@ -33,9 +35,12 @@ run = "echo postlint"
 
 [tasks.ssh-command-run]
 description = "Run a command over SSH on the remote nodes"
+usage = '''
+arg "<command>" help="Command to run over SSH"
+'''
 run = """
 for node in $HOMELAB_NODES; do
-  ssh $node {{arg(name="command")}}
+  ssh $node "$usage_command"
 done
 """
 
@@ -60,6 +65,7 @@ ansible-playbook --inventory hosts site.yaml --tags k3s
 [tasks.kubeconfig-get]
 description = "Fetch the K3s kubeconfig from the control plane"
 run = """
+mkdir -p kubeconfig
 scp eniac-node1:/etc/rancher/k3s/k3s.yaml kubeconfig/k3s.yaml
 sed -i '' 's/127.0.0.1/eniac-node1.home.gawbul.io/g' kubeconfig/k3s.yaml
 """
@@ -67,13 +73,14 @@ sed -i '' 's/127.0.0.1/eniac-node1.home.gawbul.io/g' kubeconfig/k3s.yaml
 [tasks.age-generate-keys]
 description = "Generate age encryption keys"
 run = """
+mkdir -p ~/.config/sops/age
 age-keygen -o ~/.config/sops/age/keys.txt
 """
 
 [tasks.sops-secret-create]
 description = "Create sops secret in cluster"
 run = """
-cat /Users/gawbul/.config/sops/age/keys.txt | kubectl create secret generic sops-age --namespace=flux-system --from-file=age.agekey=/dev/stdin
+kubectl create secret generic sops-age --namespace=flux-system --from-file=age.agekey="$HOME/.config/sops/age/keys.txt"
 """
 
 [tasks.flux-uninstall]
