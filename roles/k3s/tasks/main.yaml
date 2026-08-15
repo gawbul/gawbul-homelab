@@ -34,6 +34,7 @@
     url: "https://github.com/k3s-io/k3s/releases/download/{{ k3s_version }}/k3s-arm64"
     dest: "{{ k3s_install_dir }}/k3s"
     mode: "0755"
+  notify: Restart K3s
   register: k3s_binary
 
 - name: Create symlinks for k3s tools
